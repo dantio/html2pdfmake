@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>dom2pdf</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.4/pdfmake.min.js"
+            integrity="sha512-vCaf5rysVLu1/zVMefJew+IjqlQibggltPWqeo96XsdyJ4ihR3eEDV1oU60afiRXTGf8DqKUjLs2Q99HCbnjAw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="module" src="./dist/module.js"></script>
+    <script type="module">
+      pdfMake.fonts = {
+        // download default Roboto font from cdnjs.com
+        Roboto: {
+          normal: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf',
+          bold: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf',
+          italics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf',
+          bolditalics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf'
+        },
+      }
+
+      import {dom2pdfmake} from './dist/module.js';
+
+      function renderPdf() {
+        const el = document.getElementById('template');
+
+        const {content, styles} = dom2pdfmake(el);
+
+        document.getElementById('pdfmake').value = JSON.stringify(content, null, 2);
+
+        pdfMake.createPdf({
+          compress: true,
+          info: {
+            title: 'Template',
+          },
+
+          // pageSize: 1,
+          // pageOrientation: metas.pageOrientation,
+          // pageMargins: metas.pageMargins,
+
+          // background: function (page) {return {}},
+          // watermark: {text: 'test watermark', color: 'blue', opacity: 0.3, bold: true, italics: false},
+
+          styles: styles,
+          content: content
+        }).getBase64(base64 => {
+          const iframe = document.getElementById('preview');
+          iframe.src = 'data:application/pdf;base64,' + base64;
+        })
+      }
+
+      document.getElementById('render').addEventListener('click', renderPdf);
+    </script>
+</head>
+<body>
+<div id="template" style="border: 1px solid black; padding: 10px;">
+    <div>
+        <h1>H1</h1>
+        <h2>H2</h2>
+        <h3>H3</h3>
+        <h4>H4</h4>
+        <h5>H5</h5>
+        <h6>H6</h6>
+        <b>Bold Text</b>
+        <i>Italic Text</i>
+        <u>underline</u>
+        <span style="color: red">Red Color</span>
+        <table>
+            <tr><th>Th</th></tr>
+            <tr><td>Td</td></tr>
+        </table>
+        <ul>
+            <li>List</li>
+        </ul>
+    </div>
+</div>
+<button id="render">Render PDF</button>
+<div style="display: flex">
+    <div style="flex-basis: 700px">
+        <textarea style="width: 100%; height: 100%" id="pdfmake"></textarea>
+    </div>
+    <iframe id="preview" width="100%" height="600px"></iframe>
+</div>
+</body>
+</html>
