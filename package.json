@@ -1,25 +1,99 @@
 {
-  "name": "dom2pdfmake",
-  "version": "1.0.0",
-  "description": "DOM to pdfmake",
-  "source": "src/index.js",
-  "main": "dist/main.js",
-  "module": "dist/module.js",
+  "name": "html2pdfmake",
+  "version": "0.0.1",
+  "description": "HTML/DOM to pdfmake",
+  "type": "module",
+  "author": "Daniil Tomilow",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dantio/html2pdfmake.git"
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
+      }
+    },
+    "./lib/*": {
+      "import": {
+        "types": "./dist/*",
+        "default": "./dist/*"
+      },
+      "require": {
+        "types": "./lib/*",
+        "default": "./lib/*"
+      }
+    },
+    "./*": {
+      "import": {
+        "types": "./dist/*",
+        "default": "./dist/*"
+      },
+      "require": {
+        "types": "./lib/*",
+        "default": "./lib/*"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "module": "./dist/index.js",
+  "browser": "./lib/html2pdfmake.min.js",
+  "browser:esm": "./dist/html2pdfmake.min.mjs",
+  "jsdelivr": "./lib/html2pdfmake.min.js",
+  "unpkg": "./lib/html2pdfmake.min.js",
+  "browserslist": "> 0.5%, last 2 versions, not dead",
   "scripts": {
-    "test": "mocha --reporter=dot 'test/*-spec.js'",
-    "watch": "parcel watch",
-    "build": "parcel build"
+    "build": "rimraf lib dist && tsc && concurrently \"npm run build:cjs\" \"npm run build:browser\"",
+    "test": "mocha --reporter=dot",
+    "lint": "eslint ./src --ext .ts ",
+    "report": "nyc npm run test",
+    "report:summary": "nyc --reporter=lcov --reporter=text-summary npm run test",
+    "watch": "concurrently \"tsc --watch --project tsconfig.watch.json\" \"rollup -w -c\"",
+    "cjs:fix": "node -e \"require('fs').writeFileSync('lib/package.json', JSON.stringify({type: 'commonjs'}, null, 2))\"",
+    "build:cjs": "tsc --project tsconfig.csj.json && npm run cjs:fix",
+    "build:browser": "rollup -c",
+    "prerelease": "npm run lint && npm run test && npm run build",
+    "release": "standard-version"
   },
   "keywords": [
-    "pdfmake"
+    "pdfmake",
+    "html2pdfmake",
+    "pdf",
+    "html",
+    "dom"
   ],
-  "author": "Daniil T.",
-  "license": "ISC",
   "devDependencies": {
+    "@types/chai": "^4.3.1",
+    "@types/jsdom": "^16.2.14",
+    "@types/mocha": "^9.1.1",
+    "@typescript-eslint/eslint-plugin": "^5.20.0",
+    "@typescript-eslint/parser": "^5.20.0",
     "chai": "^4.3.6",
+    "concurrently": "^7.1.0",
+    "eslint": "^8.14.0",
     "jsdom": "^19.0.0",
     "mocha": "^9.2.2",
-    "parcel": "^2.3.2"
+    "nyc": "^15.1.0",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.70.2",
+    "rollup-plugin-terser": "^7.0.2",
+    "ts-node": "^10.7.0",
+    "tslib": "^2.3.1",
+    "typescript": "^4.6.3"
   },
-  "includes": ["dist"]
+  "includes": [
+    "dist",
+    "lib"
+  ],
+  "engines": {
+    "node": "^12.22.0 || ^14.17.0 || >=16.0.0"
+  }
 }

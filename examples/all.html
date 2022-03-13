@@ -1,0 +1,94 @@
+<div>
+    <toc style="display: block; margin: 20px 0"
+         data-pdfmake='{"toc": { "title": { "textMargin": [20, 0, 0, 0] } } }'>Table of Content
+    </toc>
+    <div>
+        <span style="font-feature-settings: 'smcp';background: red; ">font-feature-settings: 'smcp'</span>
+        <qr-code data-size="128px" style="text-align: right; " value="QrCode"></qr-code>
+    </div>
+    <p><span style="color: violet">Red Color<span
+            style="text-decoration: line-through">Red Color line-through<span><span>XXX</span></span></span></span>
+    </p>
+    <p><span style="white-space: pre">    white-space:pre       	x</span><span>   white   space</span></p>
+
+    <!-- <span style="position: absolute; left: 100px;">Position Absolute!</span> -->
+    <p>Line Break
+        <b> Whitespace Before</b><br>
+        <b>Break before</b>
+    </p>
+
+    <p><span style="white-space: pre">    white-space:pre       	x</span><span>   white   space</span></p>
+    <h1 style="text-align: center">H1 centered</h1>
+    <h2 class="headline2">H2 color red</h2>
+    <h3 data-toc-item='{ "tocStyle": { "italics": true }, "tocMargin": [10, 0, 0, 0] }' style="font-weight: normal">H3</h3>
+    <h4>H4</h4>
+    <h5>H5</h5>
+    <h6 data-toc-item>H6</h6>
+    <span style="font-size: 10px">10px font-size</span>
+    <input type="text" placeholder="Input Field" value="input field"/><br>
+    <textarea type="text" placeholder="Input Field">textarea</textarea><br>
+    <select>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+    </select>
+    <hr/>
+    <!-- comment is ignored -->
+    <a href="https://pdfmake.github.io/docs/0.3/">link<span>is also link</span></a>
+    <s>line-through</s>
+    <sub style="opacity: 0.4">sub</sub>
+    <del>del</del>
+    <br>
+    <img src="https://picsum.photos/100/200" width="100px" height="100px" alt="image"
+         style="opacity: 0.4;object-fit: contain"/>
+    <div style="display: flex; gap: 20px; page-break-after: always">
+        <b style="width: 200px;">Bold Text <small>Small</small></b>
+        <i>Italic Text</i>
+        <i>Column 3</i>
+        <u>underline</u>
+        <svg viewBox="0 0 24 24" width="24px" height="24px">
+            <path style="fill:#f78422;"
+                  d="M6.503 20.752c0 1.794-1.456 3.248-3.251 3.248-1.796 0-3.252-1.454-3.252-3.248 0-1.794 1.456-3.248 3.252-3.248 1.795.001 3.251 1.454 3.251 3.248zm-6.503-12.572v4.811c6.05.062 10.96 4.966 11.022 11.009h4.817c-.062-8.71-7.118-15.758-15.839-15.82zm0-3.368c10.58.046 19.152 8.594 19.183 19.188h4.817c-.03-13.231-10.755-23.954-24-24v4.812z"/>
+        </svg>
+        <span style="color: red">Red<span style="text-decoration: line-through">Red Color</span></span>
+    </div>
+    <table style="border: 1px dashed black; width: 90%">
+        <colgroup>
+            <col style="width: 300px;">
+            <col style="width: auto">
+            <col>
+        </colgroup>
+        <tr style="height: 50px">
+            <th>Th1</th>
+            <th>Th2</th>
+            <th>Th3</th>
+        </tr>
+        <tr>
+            <td style="background: red">Red Background</td>
+            <td colspan="2">colspan="2"</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #00dc3c;">Td1</td>
+            <td>Td2</td>
+            <td>Td3</td>
+        </tr>
+    </table>
+    <ul style="color: blue">
+        <li><span style="color: green">List</span></li>
+        <li>List</li>
+        <li>List</li>
+        <li>List</li>
+    </ul>
+    <ol start="10">
+        <li>10</li>
+        <li>11</li>
+        <li style="list-style-type: none">list-style-type: none</li>
+        <li value="100">value="100"</li>
+    </ol>
+    <ol style="list-style-type: lower-alpha">
+        <li>a</li>
+        <li>b</li>
+        <li style="list-style-type: none">list-style-type: none</li>
+    </ol>
+    <p>Reference</p>
+</div>

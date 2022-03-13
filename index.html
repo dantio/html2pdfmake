@@ -2,28 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
-    <title>dom2pdf</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.4/pdfmake.min.js"
-            integrity="sha512-vCaf5rysVLu1/zVMefJew+IjqlQibggltPWqeo96XsdyJ4ihR3eEDV1oU60afiRXTGf8DqKUjLs2Q99HCbnjAw=="
+    <title>html2pdfmake</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital@0;1&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.3.0-beta.2/pdfmake.min.js"
+            integrity="sha512-k9XKlDENMt9s19gEl+L6F/r+OWAR4pesbUd8/SKQVMt3b1ECqsRXgLA9XnJoq4J9mjlxLQabfTxf3268lzpFUQ=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script type="module" src="./dist/module.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@keeex/qrcodejs-kx@1.0.2/qrcode.min.js"></script>
+    <!--<script src="./dist/html2pdfmake.min.js"></script>-->
+    <script type="module" src="./dist/html2pdfmake.mjs"></script>
     <script type="module">
       pdfMake.fonts = {
         // download default Roboto font from cdnjs.com
         Roboto: {
-          normal: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf',
-          bold: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf',
-          italics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf',
-          bolditalics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf'
+          normal: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.4/fonts/Roboto/Roboto-Regular.ttf',
+          bold: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.4/fonts/Roboto/Roboto-Medium.ttf',
+          italics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.4/fonts/Roboto/Roboto-Italic.ttf',
+          bolditalics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.4/fonts/Roboto/Roboto-MediumItalic.ttf'
         },
       }
 
-      import {dom2pdfmake} from './dist/module.js';
+      import {parse} from './dist/html2pdfmake.mjs';
 
-      function renderPdf() {
+      async function renderPdf() {
         const el = document.getElementById('template');
 
-        const {content, styles} = dom2pdfmake(el);
+        const {content, images, patterns} = parse(el);
 
         document.getElementById('pdfmake').value = JSON.stringify(content, null, 2);
 
@@ -40,45 +45,118 @@
           // background: function (page) {return {}},
           // watermark: {text: 'test watermark', color: 'blue', opacity: 0.3, bold: true, italics: false},
 
-          styles: styles,
-          content: content
-        }).getBase64(base64 => {
+          styles: {
+            '.headline2': {
+              color: 'red'
+            },
+            'tr:nth-child(even)': {
+              color: 'blue'
+            },
+          },
+          content: [
+            ...content
+          ],
+          images,
+          patterns
+        }).getBase64().then(base64 => {
           const iframe = document.getElementById('preview');
           iframe.src = 'data:application/pdf;base64,' + base64;
+        }).catch(e => {
+          console.error(e);
         })
       }
 
+      window.renderPdf = renderPdf;
+
       document.getElementById('render').addEventListener('click', renderPdf);
     </script>
+    <script>
+      function initQr() {
+        const qrs = document.getElementsByTagName('qr-code');
+        for (let qr of qrs) {
+          const size = parseInt(qr.getAttribute('data-size') || 128, 10)
+          new QRCode(qr, {
+            text: qr.getAttribute('value'),
+            width: size,
+            height: size,
+          });
+        }
+      }
+
+      function loadTemplate(name) {
+        if (!name) {
+          return
+        }
+
+        return fetch('/examples/' + name).then(response => response.text()).then(template => {
+          document.getElementById('template').innerHTML = template;
+        }).then(() => {
+          initQr();
+          renderPdf();
+        })
+      }
+    </script>
+    <style>
+        body, html {
+            margin: 0;
+        }
+
+        .wrapper {
+            display: flex;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .page {
+            background: #e6e6e6;
+            padding: 20px;
+
+        }
+
+        .toolbar {
+            padding: 20px;
+        }
+
+        .page > div {
+            padding: 16px;
+            position: relative;
+            width: 21cm;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+            background: #fff;
+        }
+
+        qr-code {
+            display: block;
+        }
+
+        qr-code img {
+            display: inline-block !important;
+        }
+    </style>
 </head>
 <body>
-<div id="template" style="border: 1px solid black; padding: 10px;">
-    <div>
-        <h1>H1</h1>
-        <h2>H2</h2>
-        <h3>H3</h3>
-        <h4>H4</h4>
-        <h5>H5</h5>
-        <h6>H6</h6>
-        <b>Bold Text</b>
-        <i>Italic Text</i>
-        <u>underline</u>
-        <span style="color: red">Red Color</span>
-        <table>
-            <tr><th>Th</th></tr>
-            <tr><td>Td</td></tr>
-        </table>
-        <ul>
-            <li>List</li>
-        </ul>
-    </div>
+<div class="toolbar">
+    <button id="render">Render PDF</button>
+    <select id="selectTemplate" onchange="loadTemplate(options[selectedIndex].value)">
+        <option value="basic.html">Basic</option>
+        <option value="all.html">All</option>
+        <option selected="selected" value="style1.html">Style1</option>
+        <option value="tables.html">Tables</option>
+    </select>
 </div>
-<button id="render">Render PDF</button>
-<div style="display: flex">
-    <div style="flex-basis: 700px">
-        <textarea style="width: 100%; height: 100%" id="pdfmake"></textarea>
+<div class="wrapper">
+    <div id="template" class="page" contenteditable="true">
+        <p>Select a template</p>
     </div>
-    <iframe id="preview" width="100%" height="600px"></iframe>
+    <iframe id="preview" width="100%" height="800px"></iframe>
 </div>
+
+<div>
+    <textarea style="width: 100%; height: 500px" id="pdfmake"></textarea>
+</div>
+<script>
+
+  const select = document.getElementById('selectTemplate')
+  loadTemplate(select.options[select.selectedIndex].value)
+</script>
 </body>
 </html>
