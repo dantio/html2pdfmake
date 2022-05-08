@@ -1,6 +1,6 @@
 # html2pdfmake
+Parse HTLM/DOM to pdfmake.
 This library is WIP. API is not stable yet.
-
 
 ## Run examples
 ```sh
