@@ -27,7 +27,7 @@ const findLastDeep = (ta: TextArray): Text | Leaf | undefined => {
   return last;
 };
 
-const findFirstArrayDeep = (ta: TextArray): Array<Text | Leaf> => {
+const findFirstArrayDeep = (ta: TextArray): Array<Text | Leaf> | undefined => {
   const first = ta.text.at(0);
   if (isTextArray(first)) {
     return findFirstArrayDeep(first);
@@ -40,7 +40,7 @@ export const collapseWhitespace = (item: TextArray, nextText: TextArray) => {
   const prevLastText = findLastDeep(item);
   const nextFirstTextArray = findFirstArrayDeep(nextText);
 
-  if (prevLastText && prevLastText[META]?.[IS_WHITESPACE] && nextFirstTextArray[0][META]?.[IS_WHITESPACE]) {
+  if (prevLastText && prevLastText[META]?.[IS_WHITESPACE] && nextFirstTextArray?.[0][META]?.[IS_WHITESPACE]) {
     nextFirstTextArray.shift();
   }
 };

@@ -86,7 +86,7 @@
           return
         }
 
-        return fetch('/examples/' + name).then(response => response.text()).then(template => {
+        return fetch('examples/' + name).then(response => response.text()).then(template => {
           document.getElementById('template').innerHTML = template;
         }).then(() => {
           initQr();
