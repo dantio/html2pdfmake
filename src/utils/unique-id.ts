@@ -1,9 +1,9 @@
 import {META, NODE, UID} from '../constants.js';
-import {Item} from '../types.js';
+import {LazyItem} from '../types.js';
 import {isElement} from './type-guards.js';
 
 let _uid = 0;
-export const getUniqueId = (item: Item): string => {
+export const getUniqueId = (item: LazyItem): string => {
   const meta = item[META] || {};
   const __uid = meta[UID];
   const el = item[META]?.[NODE];

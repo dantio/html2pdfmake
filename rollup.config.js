@@ -15,8 +15,7 @@ export default {
     {
       file: pkg['browser:esm'],
       format: 'module',
-      sourcemap: true,
-      plugins: [terser()]
+      sourcemap: false
     }
   ]
 };

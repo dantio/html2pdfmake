@@ -1,4 +1,5 @@
 import {
+  CHILDREN,
   END_WITH_NEWLINE,
   END_WITH_WHITESPACE,
   HANDLER,
@@ -28,7 +29,7 @@ export type Config = {
 }
 
 export type El = Element | Node;
-export type Rule = (el: El, ctx: Context) => Item | null
+export type Rule = (el: El, ctx: Context) => LazyItem | null
 
 export type Styles = Record<string, string>;
 export type CssStyles = Record<string, Styles>;
@@ -36,7 +37,7 @@ export type CssStyles = Record<string, Styles>;
 export type Margin = [number, number, number, number]
 
 export type Meta = {
-  [IS_WHITESPACE]?: string
+  [IS_WHITESPACE]?: string | boolean
   [END_WITH_NEWLINE]?: boolean
   [START_WITH_NEWLINE]?: boolean
   [IS_NEWLINE]?: boolean
@@ -49,10 +50,12 @@ export type Meta = {
   [POSITION]?: 'absolute' | 'relative'
   [IS_COLGROUP]?: boolean
   [ITEMS]?: Record<string, Item | Item[]>
-  [HANDLER]?: (item: Item) => void
+  [HANDLER]?: (item: Item) => Item | null
   [STYLE]?: Styles
   [PDFMAKE]?: Record<string, unknown>
+  [CHILDREN]?: (parentStyles: Styles, ctx: Context) => Item | null
 }
+
 
 export type TextProps = {
   bold?: boolean
@@ -141,6 +144,7 @@ export type Ol = {
   ol: Item[]
 } & CommonProps;
 
+
 export type SVG = {
   svg: string
 } & CommonProps;
@@ -186,13 +190,8 @@ export type Text = {
   tocItem?: boolean
 } & CommonProps;
 
-export type Stack = {
-  stack: Item[]
-} & CommonProps;
-
-export type QR = {
-  qr: string
-} & CommonProps;
+export type Stack = { stack: Item[] } & CommonProps;
+export type QR = { qr: string } & CommonProps;
 
 export type TocTitle = TextProps & {
   text: string
@@ -209,5 +208,22 @@ export type Toc = {
   toc: TocDefinition
 } & CommonProps;
 
+export type TextArray = Omit<Text, 'text'> & { text: Array<Leaf | Text> }
+
 export type ItemNode = Text | Stack | Table | Ul | Ol | SVG | Image | Column | QR | Toc;
+export type ItemCollapsable = ItemNode & { margin: Margin };
 export type Item = ItemNode | Leaf;
+
+export type LazyItems = (items: Item[], ctx: Context) => Item[]
+export type LazyTxt = (items: Array<Text | Leaf>, ctx: Context) => Leaf | Array<Leaf | Text>
+export type LazyTableItems = (items: Item[], ctx: Context) => Array<Item[] | Leaf[]>
+
+export type LazyUl = Ul | Omit<Ul, 'ul'> & { ul: LazyItems };
+export type LazyOl = Ol | Omit<Ol, 'ol'> & { ol: LazyItems };
+export type LazyStack = Stack | Omit<Stack, 'stack'> & { stack: LazyItems }
+export type LazyText = Text | Omit<Text, 'text'> & { text: LazyTxt };
+export type LazyTableDefinition = Omit<TableDefinition, 'body'> & { body: LazyTableItems }
+export type LazyTable = Table | Omit<Table, 'table'> & { table: LazyTableDefinition }
+
+export type LazyItemNode = LazyText | LazyStack | LazyTable | LazyUl | LazyOl | SVG | Image | Column | QR | Toc;
+export type LazyItem = LazyItemNode | Leaf;

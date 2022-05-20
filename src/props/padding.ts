@@ -1,9 +1,9 @@
 import {MARGIN, META, PADDING, POS_BOTTOM, POS_LEFT, POS_RIGHT, POS_TOP} from '../constants.js';
-import {ComputedProps, Item} from '../types.js';
-import {toUnit} from '../utils/unit.js';
+import {ComputedProps, LazyItem} from '../types.js';
 import {isTable, isTdOrTh} from '../utils/type-guards.js';
+import {toUnit} from '../utils/unit.js';
 
-export const computePadding = (props: ComputedProps, item: Item, value: number, index: number) => {
+export const computePadding = (props: ComputedProps, item: LazyItem, value: number, index: number) => {
   if (isTable(item)) {
     props.layout = item.layout || props.layout || {};
     if (typeof props.layout === 'string') {

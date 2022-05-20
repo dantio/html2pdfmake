@@ -2,7 +2,6 @@ import {getPatterns} from './constants.js';
 import {Context} from './context.js';
 import {defaultConfig} from './default-config.js';
 import {parseChildren} from './parser/index.js';
-import {assignProps} from './props/assign-props.js';
 import {Config} from './types.js';
 import {htmlToDom} from './utils/html-to-dom.js';
 
@@ -16,9 +15,8 @@ export const parse = (input: Element | string, _config: Config = defaultConfig()
 
   const body = typeof input === 'string' ? htmlToDom(input) : input;
 
-  const content = body !== null ? parseChildren(body, true, ctx) : [];
+  const content = body !== null ? parseChildren(body, ctx) : [];
 
-  assignProps(content, ctx);
 
   return {
     content,

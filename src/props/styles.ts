@@ -1,4 +1,4 @@
-import {CssStyles, El, ItemNode, Styles} from '../types.js';
+import {CssStyles, El, LazyItemNode, Styles} from '../types.js';
 
 /**
  * @param el DOM Element
@@ -11,7 +11,7 @@ export const getInlineStyles = (el: El): Styles => ('getAttribute' in el ? el.ge
     return style;
   }, {});
 
-export const getDefaultStyles = (el: El, item: ItemNode, styles: CssStyles): Styles =>
+export const getDefaultStyles = (el: El, item: LazyItemNode, styles: CssStyles): Styles =>
   (item.style || []).concat(el.nodeName.toLowerCase())
     .filter((selector) => styles && styles[selector])
     .reduce((style: Styles, selector: string) => {

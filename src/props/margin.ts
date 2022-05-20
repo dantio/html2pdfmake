@@ -1,7 +1,7 @@
 import {MARGIN, META, PADDING} from '../constants.js';
-import {ComputedProps, Item} from '../types.js';
+import {ComputedProps, LazyItem} from '../types.js';
 
-export const computeMargin = (itemProps: ComputedProps, item: Item, value: number, index: number) => {
+export const computeMargin = (itemProps: ComputedProps, item: LazyItem, value: number, index: number) => {
   const margin = itemProps[META][MARGIN] || item[META]?.[MARGIN] || [0, 0, 0, 0];
   margin[index] = value;
   itemProps[META][MARGIN] = [...margin];

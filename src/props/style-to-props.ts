@@ -1,13 +1,13 @@
 import {HANDLER, META, NODE, POS_BOTTOM, POS_LEFT, POS_RIGHT, POS_TOP, POSITION, STYLE} from '../constants.js';
 import {handleColumns, handleHeadlineToc, handleImg} from '../handler/index.js';
-import {ComputedProps, ItemNode, Styles, Table} from '../types.js';
+import {ComputedProps, LazyItemNode, Styles, Table} from '../types.js';
+import {isHeadline, isImage, isList, isTable, isTdOrTh, isTextSimple} from '../utils/type-guards.js';
 import {expandValueToUnits, toUnit, toUnitOrValue} from '../utils/unit.js';
 import {computeBorder} from './border.js';
 import {computeMargin} from './margin.js';
 import {computePadding} from './padding.js';
-import {isTdOrTh, isHeadline, isImage, isList, isTable, isTextLeaf} from '../utils/type-guards.js';
 
-export const styleToProps = (item: ItemNode, styles: Styles, parentStyles: Styles = {}) => {
+export const styleToProps = (item: LazyItemNode, styles: Styles, parentStyles: Styles = {}) => {
   const props: ComputedProps = {
     [META]: {
       [STYLE]: {},
@@ -18,7 +18,7 @@ export const styleToProps = (item: ItemNode, styles: Styles, parentStyles: Style
   const meta = props[META];
   const image = isImage(item);
   const table = isTable(item);
-  const leaf = isTextLeaf(item);
+  const text = isTextSimple(item);
   const list = isList(item);
   const rootFontSize = toUnit(parentStyles['font-size'] || '16px');
 
@@ -222,7 +222,7 @@ export const styleToProps = (item: ItemNode, styles: Styles, parentStyles: Style
         break;
       case 'white-space':
         if (value === 'pre' && meta[NODE]) {
-          if (leaf) {
+          if (text) {
             props.text = meta[NODE]?.textContent || '';
           }
 
@@ -233,6 +233,8 @@ export const styleToProps = (item: ItemNode, styles: Styles, parentStyles: Style
       case 'display':
         if (value === 'flex') {
           props[META][HANDLER] = handleColumns;
+        } else if (value === 'none') {
+          props[META][HANDLER] = () => null;
         }
         break;
       case 'opacity':

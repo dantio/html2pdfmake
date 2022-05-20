@@ -1,9 +1,9 @@
 import {IS_WHITESPACE, MARGIN, META, PADDING, POS_BOTTOM, POS_TOP} from '../constants.js';
-import {Item} from '../types.js';
-import {isCollapsable} from './type-guards.js';
+import {Item, Leaf, Text, TextArray} from '../types.js';
+import {isCollapsable, isTextArray} from './type-guards.js';
 
 export const collapseMargin = (item: Item, prevItem?: Item) => {
-  if (isCollapsable(item) && item.margin && prevItem && isCollapsable(prevItem) && prevItem.margin) {
+  if (isCollapsable(item) && isCollapsable(prevItem)) {
     const prevMargin = prevItem[META]?.[MARGIN] || [0, 0, 0, 0];
 
     prevItem[META] = {...(prevItem[META] || {}), [MARGIN]: prevMargin};
@@ -18,17 +18,29 @@ export const collapseMargin = (item: Item, prevItem?: Item) => {
   }
 };
 
-export const collapseWhitespace = (item: Item, next?: Item) => {
-  if ('text' in item && typeof item.text === 'string' && item[META]?.[IS_WHITESPACE] && next) {
-    if (next[META]?.[IS_WHITESPACE] && 'text' in next) {
-      next.text = '';
-    } else if (Array.isArray(next) && next[0] && next[0][IS_WHITESPACE] && 'text' in next[0]) {
-      next[0].text = '';
-    } else if ('text' in next
-      && Array.isArray(next.text)
-      && next.text[0]
-      && !Array.isArray(next.text[0]) && typeof next.text[0] !== 'string' && next.text[0][META]?.[IS_WHITESPACE]) {
-      next.text[0].text = '';
-    }
+const findLastDeep = (ta: TextArray): Text | Leaf | undefined => {
+  const last = ta.text.at(-1);
+  if (isTextArray(last)) {
+    return findLastDeep(last);
+  }
+
+  return last;
+};
+
+const findFirstArrayDeep = (ta: TextArray): Array<Text | Leaf> => {
+  const first = ta.text.at(0);
+  if (isTextArray(first)) {
+    return findFirstArrayDeep(first);
+  }
+
+  return ta.text;
+};
+
+export const collapseWhitespace = (item: TextArray, nextText: TextArray) => {
+  const prevLastText = findLastDeep(item);
+  const nextFirstTextArray = findFirstArrayDeep(nextText);
+
+  if (prevLastText && prevLastText[META]?.[IS_WHITESPACE] && nextFirstTextArray[0][META]?.[IS_WHITESPACE]) {
+    nextFirstTextArray.shift();
   }
 };

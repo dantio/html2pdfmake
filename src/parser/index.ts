@@ -1,47 +1,94 @@
 import {
   END_WITH_NEWLINE,
   END_WITH_WHITESPACE,
-  HANDLER,
-  IS_COLGROUP,
   IS_INPUT,
   IS_NEWLINE,
-  ITEMS,
+  IS_WHITESPACE,
   META,
   NODE,
-  POSITION,
   START_WITH_NEWLINE,
   START_WITH_WHITESPACE
 } from '../constants.js';
 import {Context} from '../context.js';
-import {handleTable} from '../handler/index.js';
-import {El, Item, Table, TableDefinition, Text} from '../types.js';
+import {handleItem} from '../handler/index.js';
+import {computeProps} from '../props/index.js';
+import {El, Item, LazyItem, Styles, TextArray} from '../types.js';
+import {collapseMargin, collapseWhitespace} from '../utils/collapse.js';
 import {getChildItems} from '../utils/index.js';
-import {isColgroup, isElement, isNode} from '../utils/type-guards.js';
+import {isElement, isNode, isTextArray, isTextOrLeaf} from '../utils/type-guards.js';
 import {toUnit} from '../utils/unit.js';
 import {parseImg} from './parse-img.js';
 import {parseSvg} from './parse-svg.js';
+import {parseTable} from './parse-table.js';
 import {parseText} from './parse-text.js';
 import {addWhitespace} from './whitespace.js';
 
-const parseAsHTMLCollection = (el: El): el is Element => ['TABLE', 'COLGROUP', 'UL', 'OL', 'SELECT'].includes(el.nodeName) && 'children' in el;
+const parseAsHTMLCollection = (el: El): el is Element => ['TABLE', 'TBODY', 'TR', 'COLGROUP', 'COL', 'UL', 'OL', 'SELECT'].includes(el.nodeName) && 'children' in el;
 export const stackRegex = /^(address|blockquote|body|center|colgroup|dir|div|dl|fieldset|form|h[1-6]|hr|isindex|menu|noframes|noscript|ol|p|pre|table|ul|dd|dt|frameset|li|tbody|td|tfoot|th|thead|tr|html)$/i;
 export const isStackItem = (el: El) => stackRegex.test(el.nodeName);
 
-export const parseChildren = (el: El, ignoreNewLines = true, ctx: Context): Item[] => {
+export const parseChildren = (el: El, ctx: Context, parentStyles = {}): Item[] => {
   const items: Item[] = [];
   const children = parseAsHTMLCollection(el) ? el.children : el.childNodes;
 
   for (let i = 0; i < children.length; i++) {
-    const subItems = parseByRule(children[i], ctx);
-    if (subItems === null) {
+    const item = parseByRule(children[i], ctx, parentStyles);
+    if (item === null) {
       continue;
     }
 
-    if (ignoreNewLines && !Array.isArray(subItems) && subItems[META]?.[START_WITH_NEWLINE]) {
+    const isNewline = !!item[META]?.[IS_NEWLINE];
+    const prevItem: Item | undefined = items[items.length - 1];
+
+    if (ctx.config.collapseMargin && prevItem) {
+      collapseMargin(item, prevItem);
+    }
+
+    if (isNewline && (items.length === 0 || !children[i + 1] || prevItem && 'stack' in prevItem)) {
       continue;
     }
 
-    items.push(subItems);
+    // Stack item
+    if (!('text' in item)) {
+      items.push(item);
+      continue;
+    }
+
+    const endWithNewLine = !!item[META]?.[END_WITH_NEWLINE];
+    const startWithNewLine = !!item[META]?.[START_WITH_NEWLINE];
+    const endWithWhiteSpace = !!item[META]?.[END_WITH_WHITESPACE];
+    const startWithWhitespace = !!item[META]?.[START_WITH_WHITESPACE];
+    const isWhitespace = !!item[META]?.[IS_WHITESPACE];
+
+    const textItem: TextArray = Array.isArray(item.text)
+      ? item as TextArray : {text: [isWhitespace ? addWhitespace('newLine') : item]};
+
+    if (!isNewline && !isWhitespace) {
+      // https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Whitespace
+      // add whitespace before
+      if (startWithNewLine || startWithWhitespace) {
+        textItem.text.unshift(addWhitespace(startWithNewLine ? 'startWithNewLine' : 'startWithWhitespace'));
+      }
+
+      // add whitespace after
+      if (endWithNewLine || endWithWhiteSpace) {
+        textItem.text.push(addWhitespace(endWithNewLine ? 'endWithNewLine' : 'endWithWhiteSpace'));
+      }
+    }
+
+    // Append text to last text element otherwise a new line is created
+    if (isTextArray(prevItem)) {
+      if (ctx.config.collapseWhitespace) {
+        collapseWhitespace(prevItem, textItem);
+      }
+
+      prevItem.text.push(textItem);
+    } else {
+      // wrap so the next text items  will be appended to it
+      items.push({
+        text: [textItem]
+      });
+    }
   }
 
   return items;
@@ -61,7 +108,7 @@ export const getNodeRule = (node: Node): (el: Node, ctx: Context) => Item | null
   }
 };
 
-export const getElementRule = (el: Element): (el: Element, ctx: Context) => Item | null => {
+export const getElementRule = (el: Element): (el: Element, ctx: Context) => LazyItem | null => {
   const nodeName = el.nodeName.toLowerCase();
   switch (nodeName) {
     case '#comment':
@@ -74,12 +121,11 @@ export const getElementRule = (el: Element): (el: Element, ctx: Context) => Item
     case '#text':
       return parseText;
     case 'a':
-      return (el, ctx) => {
-        const item = parseElement(el, ctx);
+      return (el) => {
         const href = el.getAttribute('href');
 
-        if (!href || item === null) {
-          return item;
+        if (!href) {
+          return parseElement(el);
         }
 
         const linkify = (item: Item) => {
@@ -97,9 +143,22 @@ export const getElementRule = (el: Element): (el: Element, ctx: Context) => Item
             });
         };
 
-        linkify(item);
+        return {
+          text: items => {
+            items.forEach((link) => {
+              if (typeof link !== 'string') {
+                if (href[0] === '#') {
+                  link.linkToDestination = href.slice(1);
+                } else {
+                  link.link = href;
+                }
+              }
+              linkify(link);
+            });
 
-        return item;
+            return items;
+          }
+        };
       };
     case 'br':
       return () => ({
@@ -141,40 +200,17 @@ export const getElementRule = (el: Element): (el: Element, ctx: Context) => Item
       };
     case 'table':
       return parseTable;
-    case 'colgroup':
-      return (el: Element, param) => {
-        const items = parseChildren(el, true, param);
-        if (items === null) {
-          return null;
-        }
+    case 'ul':
+      return () => {
         return {
-          stack: items,
-          [META]: {
-            [IS_COLGROUP]: true
-          }
+          ul: (items) => items
         };
       };
-    case 'col':
-      return () => ({
-        stack: [],
-      });
-    case 'ul':
     case 'ol':
-      return (el: Element, param) => {
-        const items = parseChildren(el, true, param);
-        if (nodeName === 'ul') {
-          return {
-            ul: items,
-          };
-        }
-
-        if (nodeName === 'ol') {
-          return {
-            ol: items,
-          };
-        }
-
-        return null;
+      return () => {
+        return {
+          ol: (items) => items
+        };
       };
     case 'img':
       return parseImg;
@@ -226,7 +262,7 @@ export const getElementRule = (el: Element): (el: Element, ctx: Context) => Item
   }
 };
 
-const getItemByRule = (el: El, ctx: Context): Item | null => {
+const getItemByRule = (el: El, ctx: Context): LazyItem | null => {
   if (typeof ctx.config.customRule === 'function') {
     const result = ctx.config.customRule(el, ctx);
     if (result === null) {
@@ -245,7 +281,36 @@ const getItemByRule = (el: El, ctx: Context): Item | null => {
   throw new Error('Unsupported Node Type: ' + (el as El).nodeType);
 };
 
-export const parseByRule = (el: El, ctx: Context): Item | null => {
+export const processItems = (item: LazyItem, ctx: Context, parentStyles: Styles = {}): Item | null => {
+  const el = item[META]?.[NODE];
+
+  if (typeof item !== 'string' && el) {
+    const {cssStyles, props} = computeProps(el, item, ctx.styles, parentStyles);
+
+    Object.assign(item, props);
+
+    if ('stack' in item && typeof item.stack === 'function') {
+      const children = parseChildren(el, ctx, cssStyles);
+      item.stack = item.stack(children, ctx);
+    } else if ('text' in item && typeof item.text === 'function') {
+      const children = parseChildren(el, ctx, cssStyles);
+      item.text = item.text(children.filter(isTextOrLeaf), ctx);
+    } else if ('ul' in item && typeof item.ul === 'function') {
+      const children = parseChildren(el, ctx, cssStyles);
+      item.ul = item.ul(children, ctx);
+    } else if ('ol' in item && typeof item.ol === 'function') {
+      const children = parseChildren(el, ctx, cssStyles);
+      item.ol = item.ol(children, ctx);
+    } else if ('table' in item && typeof item.table.body === 'function') {
+      const children = parseChildren(el, ctx, cssStyles);
+      item.table.body = item.table.body(children, ctx);
+    }
+  }
+
+  return handleItem(item as Item);
+};
+
+export const parseByRule = (el: El, ctx: Context, parentStyles = {}): Item | null => {
   const item = getItemByRule(el, ctx);
   if (item === null) {
     return null;
@@ -256,131 +321,24 @@ export const parseByRule = (el: El, ctx: Context): Item | null => {
   meta[NODE] = el;
   item[META] = meta;
 
-  return item;
+  return processItems(item, ctx, parentStyles);
 };
 
-export const parseElement = (el: Element, param: Context): Item | null => {
-  const childNodes = parseChildren(el, false, param);
-
-  if (childNodes.length === 0) {
-    return null;
-  }
-
-  const items: Item[] = [];
-
-  childNodes.forEach((childNode => {
-    ([] as Item[]).concat(childNode).forEach(item => {
-      if (!('text' in item) || item[META]?.[POSITION]) {
-        items.push(item);
-        return;
-      }
-
-      // https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Whitespace
-      const endWithNewLine = !!item[META]?.[END_WITH_NEWLINE];
-      const endWithWhiteSpace = !!item[META]?.[END_WITH_WHITESPACE];
-      const isNewLine = !!item[META]?.[START_WITH_NEWLINE];
-      const startWithWhitespace = !!item[META]?.[START_WITH_WHITESPACE];
-
-      const prevItem: Item | undefined = items[items.length - 1];
-
-      // Append text to last element
-      if (prevItem && typeof prevItem !== 'string' && 'text' in prevItem && Array.isArray(prevItem.text)) {
-
-        if (isNewLine || startWithWhitespace) {
-          prevItem.text.push(addWhitespace(isNewLine ? 'isNewLine' : 'startWithWhitespace'));
-          return;
-        }
-
-        prevItem.text.push(item);
-
-        if (endWithNewLine || endWithWhiteSpace) {
-          prevItem.text.push(addWhitespace('endWithNewLine'));
-        }
-      } else {
-        if (isNewLine) {
-          return;
-        }
-
-        const text = [];
-
-        if (startWithWhitespace) {
-          text.push(addWhitespace('startWithWhitespace'));
-        }
-
-        text.push(item);
-
-        if (endWithNewLine || endWithWhiteSpace) {
-          text.push(addWhitespace(endWithNewLine ? 'endWithNewLine' : 'endWithWhiteSpace'));
-        }
-
-        // TODO
-        if (item.text[0] && typeof item.text[0] !== 'string' && item.text[0].absolutePosition) {
-          items.push(item);
-        } else {
-          items.push({
-            text
-          });
-        }
-      }
-    });
-  }));
-
+export const parseElement = (el: Element): LazyItem | null => {
   if (isStackItem(el)) {
     return {
-      stack: items,
+      stack: (items) => items
     };
   }
 
-  if (items.length > 1) {
-    return {
-      text: items as Text[]
-    };
-  }
-
-  return items[0];
-};
-
-export const parseTable = (el: Element, ctx: Context): Table | null => {
-  const items = parseChildren(el, true, ctx);
-
-  if (items.length === 0) {
-    return null;
-  }
-
-  // tbody -> tr
-  const colgroup = items.find(isColgroup) || [];
-  const tbody = items.filter(item => !isColgroup(item));
-  const trs = tbody.flatMap((item) => 'stack' in item ? item.stack : []);
-  const body = trs.map((item) => getChildItems(item));
-
-  if (body.length === 0) {
-    return null;
-  }
-
-  const longestRow = body.reduce((a, b) => a.length <= b.length ? b : a);
-
-  const table: TableDefinition = {
-    body,
-    widths: new Array(longestRow.length).fill('auto'),
-    heights: new Array(trs.length).fill('auto')
-  };
-
-  // TODO table in table?
   return {
-    table: {
-      body: [[{
-        table,
-        layout: {
-          defaultBorder: false
-        },
-      }]],
-      // widths: ['*'],
-    },
-    [META]: {
-      [ITEMS]: {colgroup, trs},
-      [HANDLER]: handleTable,
-    },
-    layout: {}
+    text: (items) => {
+      // Return flat
+      if (items.length === 1 && 'text' in items[0] && Array.isArray(items[0].text)) {
+        return items[0].text;
+      }
+      return items;
+    }
   };
 };
 

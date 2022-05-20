@@ -29,4 +29,6 @@ export const handleHeadlineToc = (item: Item) => {
   }
 
   addTocItem(item, tocStyle);
+
+  return item;
 };

@@ -4,26 +4,28 @@ import {isTable} from '../utils/type-guards.js';
 import {getUnitOrValue} from '../utils/unit.js';
 
 export const handleTable = (item: Item) => {
-  if (isTable(item) && item[META]?.[ITEMS]) {
+  if (isTable(item)) {
     const bodyItem = item.table.body[0]?.[0];
     const tableItem: Table | null = bodyItem && typeof bodyItem !== 'string' && 'table' in bodyItem ? bodyItem : null;
+
     if (!tableItem) {
-      return;
+      return item;
     }
 
     const innerTable = tableItem.table;
 
-    const colgroup = item[META]?.[ITEMS]?.colgroup;
-    if (colgroup && 'stack' in colgroup) {
+    const colgroup = bodyItem[META]?.[ITEMS]?.colgroup;
+    if (colgroup && Array.isArray(colgroup)) {
       innerTable.widths = innerTable.widths || [];
-      colgroup.stack.forEach((col, i: number) => {
+      colgroup.forEach((col, i: number) => {
         if (col[META]?.[STYLE]?.width && innerTable.widths) {
           innerTable.widths[i] = getUnitOrValue(col[META]?.[STYLE]?.width || 'auto');
         }
       });
     }
 
-    const trs = item[META]?.[ITEMS]?.trs;
+    const trs = bodyItem[META]?.[ITEMS]?.trs;
+
     if (Array.isArray(trs)) {
       trs.forEach((tr, i: number) => {
         if (tr[META]?.[STYLE]?.height && innerTable.heights) {
@@ -49,7 +51,7 @@ export const handleTable = (item: Item) => {
               paddingsLeftRight[tdIndex] = [
                 Math.max(paddingsLeftRight[tdIndex][0], column[META]?.[PADDING]?.[POS_LEFT] || 0),
                 Math.max(paddingsLeftRight[tdIndex][1], column[META]?.[PADDING]?.[POS_RIGHT] || 0)
-              ]
+              ];
             }
             column.style = column.style || [];
             column.style.push(tdIndex % 2 === 0 ? 'td:nth-child(even)' : 'td:nth-child(odd)');
@@ -101,4 +103,6 @@ export const handleTable = (item: Item) => {
       tableItem.layout = tableLayout;
     }
   }
+
+  return item;
 };

@@ -1,6 +1,6 @@
-import {ComputedProps, ItemNode} from '../types.js';
+import {ComputedProps, LazyItemNode} from '../types.js';
+import {isTable, isTdOrTh} from '../utils/type-guards.js';
 import {toUnit} from '../utils/unit.js';
-import {isTdOrTh, isTable} from '../utils/type-guards.js';
 
 const getBorderStyle = (value: string) => {
   const border = value.split(' ');
@@ -10,7 +10,7 @@ const getBorderStyle = (value: string) => {
   return {color, width, borderStyle};
 };
 
-export const computeBorder = (item: ItemNode, props: ComputedProps, directive: string, value: string) => {
+export const computeBorder = (item: LazyItemNode, props: ComputedProps, directive: string, value: string) => {
   const {color, width, borderStyle} = getBorderStyle(value);
   const tdOrTh = isTdOrTh(item);
 

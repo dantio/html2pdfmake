@@ -1,20 +1,39 @@
-import {END_WITH_NEWLINE, END_WITH_WHITESPACE, META, START_WITH_NEWLINE, START_WITH_WHITESPACE} from '../constants.js';
+import {
+  END_WITH_NEWLINE,
+  END_WITH_WHITESPACE,
+  IS_NEWLINE,
+  IS_WHITESPACE,
+  META,
+  START_WITH_NEWLINE,
+  START_WITH_WHITESPACE
+} from '../constants.js';
+import {Text} from '../types.js';
 
-export const parseText = (el: Element | Node) => {
+export const parseText = (el: Element | Node): Text | null => {
   const text = el.textContent;
   if (text === null) {
     return null;
   }
 
   const keepNewLines = text.replace(/[^\S\r\n]+/, '');
+  const trimmedText = text.replace(/\n|\t| +/g, ' ')
+    .replace(/^ +/, '')
+    .replace(/ +$/, '');
+  //.trim() removes also &nbsp;
+  const endWithNL = keepNewLines[keepNewLines.length - 1] === '\n';
+  const startWithNL = keepNewLines[0] === '\n';
+  const startWithWhitespace = text[0] === ' ';
+  const endWithWhitespace = text[text.length - 1] === ' ';
 
   return {
-    text: text.replace(/\n|\t|\s+/g, ' ').trim(),
+    text: trimmedText,
     [META]: {
-      [END_WITH_NEWLINE]: keepNewLines[keepNewLines.length - 1] === '\n',
-      [END_WITH_WHITESPACE]: text[text.length - 1] === ' ',
-      [START_WITH_WHITESPACE]: text[0] === ' ',
-      [START_WITH_NEWLINE]: keepNewLines[0] === '\n'
+      [START_WITH_NEWLINE]: startWithNL,
+      [END_WITH_NEWLINE]: endWithNL,
+      [IS_NEWLINE]: startWithNL && endWithNL && trimmedText.length === 0,
+      [START_WITH_WHITESPACE]: startWithWhitespace,
+      [END_WITH_WHITESPACE]: endWithWhitespace,
+      [IS_WHITESPACE]: startWithWhitespace && endWithWhitespace && text.length === 1,
     },
   };
 };

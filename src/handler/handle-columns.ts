@@ -1,11 +1,11 @@
 import {IS_WHITESPACE, META, STYLE} from '../constants.js';
-import {Item, ItemNode} from '../types.js';
+import {Column, Item, ItemNode} from '../types.js';
 import {getChildItems} from '../utils/index.js';
 import {toUnitOrValue} from '../utils/unit.js';
 
-export const handleColumns = (item: Item & { stack?: Item[] }) => {
+export const handleColumns = (item: Item): Column => {
   const childItems = getChildItems(item);
-  const columns = {
+  return {
     columns: childItems
       .flatMap((subItem: Item): ItemNode[] | ItemNode => {
         if ('text' in subItem && Array.isArray(subItem.text)) {
@@ -27,9 +27,7 @@ export const handleColumns = (item: Item & { stack?: Item[] }) => {
           stack: ([] as Item[]).concat(subItem),
           width: toUnitOrValue(subItem[META]?.[STYLE]?.width || 'auto') || 'auto'
         };
-      })
+      }),
+    columnGap: 'columnGap' in item ? item.columnGap : 0
   };
-
-  Object.assign(item, columns);
-  delete item.stack;
 };

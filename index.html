@@ -11,7 +11,7 @@
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/@keeex/qrcodejs-kx@1.0.2/qrcode.min.js"></script>
     <!--<script src="./dist/html2pdfmake.min.js"></script>-->
-    <script type="module" src="./dist/html2pdfmake.mjs"></script>
+    <script type="module" src="./dist/html2pdfmake.min.mjs"></script>
     <script type="module">
       pdfMake.fonts = {
         // download default Roboto font from cdnjs.com
@@ -23,7 +23,7 @@
         },
       }
 
-      import {parse} from './dist/html2pdfmake.mjs';
+      import {parse} from './dist/html2pdfmake.min.mjs';
 
       async function renderPdf() {
         const el = document.getElementById('template');
@@ -67,6 +67,7 @@
       }
 
       window.renderPdf = renderPdf;
+      window.parse = parse;
 
       document.getElementById('render').addEventListener('click', renderPdf);
     </script>
@@ -138,8 +139,8 @@
     <button id="render">Render PDF</button>
     <select id="selectTemplate" onchange="loadTemplate(options[selectedIndex].value)">
         <option value="basic.html">Basic</option>
-        <option value="all.html">All</option>
-        <option selected="selected" value="style1.html">Style1</option>
+        <option selected="selected"  value="all.html">All</option>
+        <option value="style1.html">Style1</option>
         <option value="tables.html">Tables</option>
     </select>
 </div>

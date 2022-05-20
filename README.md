@@ -1,6 +1,28 @@
 # html2pdfmake
-Parse HTLM/DOM to pdfmake.
-This library is WIP. API is not stable yet.
+Parse HTML/DOM to pdfmake.
+
+## Install
+```bash 
+npm i html2pdfmake
+yarn add html2pdfmake
+```
+
+## Usage
+```js
+import {parse} from 'html2pdfmake';
+const {content, images, patterns} = parse(document.getElementById('template'));
+
+pdfMake.createPdf({
+  // everything else
+  content,
+  images,
+  patterns
+})
+
+```
+
+### NodeJS
+Install a HTML parser like JSDOM. 
 
 ## Run examples
 ```sh

@@ -1,7 +1,7 @@
 import {META, STYLE} from '../constants.js';
-import {CssStyles, El, ItemNode, Styles} from '../types.js';
-import {attrToProps} from './attr-to-props.js';
 import {globalStyles} from '../global-styles.js';
+import {CssStyles, El, LazyItemNode, Styles} from '../types.js';
+import {attrToProps} from './attr-to-props.js';
 import {inheritStyle} from './inherit-style.js';
 import {styleToProps} from './style-to-props.js';
 import {getDefaultStyles, getInlineStyles} from './styles.js';
@@ -13,7 +13,7 @@ import {getDefaultStyles, getInlineStyles} from './styles.js';
  * @param styles additional styles
  * @param parentStyles pick styles
  */
-export const computeProps = (el: El, item: ItemNode, styles: CssStyles, parentStyles = {}) => {
+export const computeProps = (el: El, item: LazyItemNode, styles: CssStyles, parentStyles = {}) => {
   const defaultStyles = getDefaultStyles(el, item, styles);
   const rootStyles = styles[':root'] || globalStyles()[':root'];
   const inheritedStyles = inheritStyle(parentStyles);

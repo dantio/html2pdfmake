@@ -1,10 +1,10 @@
 import {HANDLER, META, NODE, PDFMAKE, STYLE} from '../constants.js';
 import {addTocItem} from '../handler/index.js';
-import {ComputedProps, Item, ItemNode} from '../types.js';
+import {ComputedProps, Item, LazyItemNode} from '../types.js';
 import {getUniqueId} from '../utils/unique-id.js';
 import {toUnit} from '../utils/unit.js';
 
-export const attrToProps = (item: ItemNode): ComputedProps => {
+export const attrToProps = (item: LazyItemNode): ComputedProps => {
   const el = item[META]?.[NODE];
   if (!el || !('getAttribute' in el)) return {[META]: {[STYLE]: {}}};
 
@@ -97,6 +97,8 @@ export const attrToProps = (item: ItemNode): ComputedProps => {
           }
           props[META][HANDLER] = (item: Item) => {
             addTocItem(item, toc);
+
+            return item;
           };
         }
         break;
