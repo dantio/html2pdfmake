@@ -8,8 +8,10 @@ yarn add html2pdfmake
 ```
 
 ## Usage
-```js
-import {parse} from 'html2pdfmake';
+```html
+<script type="module" src="https://cdn.jsdelivr.net/npm/html2pdfmake/dist/html2pdfmake.min.mjs"></script>
+<script>
+import {parse} from 'https://cdn.jsdelivr.net/npm/html2pdfmake/dist/html2pdfmake.min.mjs';
 const {content, images, patterns} = parse(document.getElementById('template'));
 
 pdfMake.createPdf({
@@ -18,7 +20,7 @@ pdfMake.createPdf({
   images,
   patterns
 })
-
+</script>
 ```
 
 ### NodeJS
