@@ -10,9 +10,7 @@
             integrity="sha512-k9XKlDENMt9s19gEl+L6F/r+OWAR4pesbUd8/SKQVMt3b1ECqsRXgLA9XnJoq4J9mjlxLQabfTxf3268lzpFUQ=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/@keeex/qrcodejs-kx@1.0.2/qrcode.min.js"></script>
-    <!--<script src="./dist/html2pdfmake.min.js"></script>-->
-    <script type="module" src="./dist/html2pdfmake.min.mjs"></script>
-    <script type="module">
+    <script type="module" defer>
       pdfMake.fonts = {
         // download default Roboto font from cdnjs.com
         Roboto: {
@@ -23,7 +21,7 @@
         },
       }
 
-      import {parse} from './dist/html2pdfmake.min.mjs';
+      import {parse} from './dist/html2pdfmake.mjs';
 
       async function renderPdf() {
         const el = document.getElementById('template');
@@ -37,13 +35,6 @@
           info: {
             title: 'Template',
           },
-
-          // pageSize: 1,
-          // pageOrientation: metas.pageOrientation,
-          // pageMargins: metas.pageMargins,
-
-          // background: function (page) {return {}},
-          // watermark: {text: 'test watermark', color: 'blue', opacity: 0.3, bold: true, italics: false},
 
           styles: {
             '.headline2': {
@@ -70,8 +61,7 @@
       window.parse = parse;
 
       document.getElementById('render').addEventListener('click', renderPdf);
-    </script>
-    <script>
+
       function initQr() {
         const qrs = document.getElementsByTagName('qr-code');
         for (let qr of qrs) {
@@ -96,6 +86,11 @@
           renderPdf();
         })
       }
+
+      window.loadTemplate = loadTemplate;
+
+      const select = document.getElementById('selectTemplate')
+      loadTemplate(select.options[select.selectedIndex].value)
     </script>
     <style>
         body, html {
@@ -138,8 +133,8 @@
 <div class="toolbar">
     <button id="render">Render PDF</button>
     <select id="selectTemplate" onchange="loadTemplate(options[selectedIndex].value)">
-        <option value="basic.html">Basic</option>
-        <option selected="selected"  value="all.html">All</option>
+        <option selected="selected"  value="basic.html">Basic</option>
+        <option value="all.html">All</option>
         <option value="style1.html">Style1</option>
         <option value="tables.html">Tables</option>
     </select>
@@ -154,10 +149,5 @@
 <div>
     <textarea style="width: 100%; height: 500px" id="pdfmake"></textarea>
 </div>
-<script>
-
-  const select = document.getElementById('selectTemplate')
-  loadTemplate(select.options[select.selectedIndex].value)
-</script>
 </body>
 </html>

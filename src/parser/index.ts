@@ -61,7 +61,7 @@ export const parseChildren = (el: El, ctx: Context, parentStyles = {}): Item[] =
     const isWhitespace = !!item[META]?.[IS_WHITESPACE];
 
     const textItem: TextArray = Array.isArray(item.text)
-      ? item as TextArray : {text: [isWhitespace ? addWhitespace('newLine') : item]};
+      ? item as TextArray : {text: [isNewline || isWhitespace ? addWhitespace('newLine') : item]};
 
     if (!isNewline && !isWhitespace) {
       // https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Whitespace
@@ -162,10 +162,7 @@ export const getElementRule = (el: Element): (el: Element, ctx: Context) => Lazy
       };
     case 'br':
       return () => ({
-        text: '\n',
-        [META]: {
-          [IS_NEWLINE]: true
-        }
+        text: '\n'
       });
     case 'qr-code': // CUSTOM
       return (el) => {

@@ -9,9 +9,11 @@ yarn add html2pdfmake
 
 ## Usage
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/npm/html2pdfmake/dist/html2pdfmake.min.mjs"></script>
-<script>
-import {parse} from 'https://cdn.jsdelivr.net/npm/html2pdfmake/dist/html2pdfmake.min.mjs';
+<div id="template">
+    <p>Text</p>
+</div>
+<script type="module">
+import {parse} from 'https://cdn.jsdelivr.net/npm/html2pdfmake/dist/html2pdfmake.mjs';
 const {content, images, patterns} = parse(document.getElementById('template'));
 
 pdfMake.createPdf({

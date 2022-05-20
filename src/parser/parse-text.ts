@@ -20,20 +20,20 @@ export const parseText = (el: Element | Node): Text | null => {
     .replace(/^ +/, '')
     .replace(/ +$/, '');
   //.trim() removes also &nbsp;
-  const endWithNL = keepNewLines[keepNewLines.length - 1] === '\n';
+  const endWithNL = keepNewLines.at(-1) === '\n';
   const startWithNL = keepNewLines[0] === '\n';
   const startWithWhitespace = text[0] === ' ';
-  const endWithWhitespace = text[text.length - 1] === ' ';
+  const endWithWhitespace = text.at(-1) === ' ';
 
   return {
     text: trimmedText,
     [META]: {
       [START_WITH_NEWLINE]: startWithNL,
       [END_WITH_NEWLINE]: endWithNL,
-      [IS_NEWLINE]: startWithNL && endWithNL && trimmedText.length === 0,
+      [IS_NEWLINE]: startWithNL && trimmedText.length === 0,
       [START_WITH_WHITESPACE]: startWithWhitespace,
       [END_WITH_WHITESPACE]: endWithWhitespace,
-      [IS_WHITESPACE]: startWithWhitespace && endWithWhitespace && text.length === 1,
+      [IS_WHITESPACE]: startWithWhitespace && text.length === 1,
     },
   };
 };
