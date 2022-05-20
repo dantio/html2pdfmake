@@ -1,4 +1,11 @@
 # html2pdfmake Changelog
+### [0.0.5](https://github.com/dantio/html2pdfmake/compare/v0.0.4...v0.0.5) (2022-05-20)
+
+
+### Bug Fixes
+
+* whitespace fix ([02a71f8](https://github.com/dantio/html2pdfmake/commit/02a71f843b161abc57b04f6d08463c116595f330))
+
 ### [0.0.4](https://github.com/dantio/html2pdfmake/compare/v0.0.3...v0.0.4) (2022-05-20)
 
 ### [0.0.3](https://github.com/dantio/html2pdfmake/compare/v0.0.2...v0.0.3) (2022-05-20)
