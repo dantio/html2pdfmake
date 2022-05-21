@@ -1,0 +1,19 @@
+<div>
+    <h1>How whitespace is handled by html2pdfmake</h1>
+    <p>html2pdfmake tries to imitate the whitespace handling like the browser will do.</p>
+    <pre style="font-size: 12px">&lt;h1&gt;   Hello
+        &lt;span&gt; World!&lt;/span&gt;   &lt;/h1&gt;
+    </pre>
+    <p>is rendered in the pdf like so:</p>
+    <h1>   Hello
+        <span> World!</span>   </h1>
+    <h2>More examples</h2>
+    <p>Line Break after this text
+        <b> 1 whitespace before&nbsp;&nbsp;&nbsp;3 whitespaces before</b><br>
+        <i>BR before</i>
+        <span>Line Break after this text
+          <u> whitespace before</u><br>
+          <b>BR before</b>
+        </span>
+    </p>
+</div>

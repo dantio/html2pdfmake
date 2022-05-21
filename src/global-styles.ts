@@ -81,7 +81,6 @@ export const globalStyles = () => ({
     'margin-top': '16px',
     'margin-bottom': '16px'
   },
-
   table: {
     border: 'none',
     padding: '3px'
@@ -97,17 +96,18 @@ export const globalStyles = () => ({
     border: 'none',
     'text-align': 'center'
   },
-
   a: {
     color: '#0000ee',
     'text-decoration': 'underline'
   },
-
   hr: {
     'border-top': '2px solid #9a9a9a',
     'border-bottom': '0',
     'border-left': '0px solid black',
     'border-right': '0',
     margin: '8px 0'
+  },
+  pre: {
+    'white-space': 'pre'
   }
 });

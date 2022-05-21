@@ -22,7 +22,7 @@
       }
 
       let module;
-      if (location.host === 'localhost') {
+      if (location.hostname === 'localhost') {
         module = await import('./dist/html2pdfmake.mjs')
       } else {
         module = await import('https://cdn.jsdelivr.net/npm/html2pdfmake/dist/html2pdfmake.mjs')
@@ -140,7 +140,8 @@
 <div class="toolbar">
     <button id="render">Render PDF</button>
     <select id="selectTemplate" onchange="loadTemplate(options[selectedIndex].value)">
-        <option selected="selected"  value="basic.html">Basic</option>
+        <option selected="selected"  value="whitespace.html">Whitespace</option>
+        <option value="basic.html">Basic</option>
         <option value="all.html">All</option>
         <option value="style1.html">Style1</option>
         <option value="tables.html">Tables</option>
