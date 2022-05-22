@@ -25,7 +25,7 @@
       if (location.hostname === 'localhost') {
         module = await import('./dist/html2pdfmake.mjs')
       } else {
-        module = await import('https://cdn.jsdelivr.net/npm/html2pdfmake/dist/html2pdfmake.mjs')
+        module = await import('https://cdn.jsdelivr.net/npm/html2pdfmake@latest/dist/html2pdfmake.mjs')
       }
 
       const {parse} = module;
@@ -95,9 +95,15 @@
       }
 
       window.loadTemplate = loadTemplate;
+      window.changeTemplate = (template) => {
+        location.hash = template;
+        loadTemplate(template);
+      }
 
       const select = document.getElementById('selectTemplate')
-      loadTemplate(select.options[select.selectedIndex].value)
+      const template = location.hash.slice(1) || select.options[select.selectedIndex].value;
+      loadTemplate(template);
+      select.value = template;
     </script>
     <style>
         body, html {
@@ -139,7 +145,7 @@
 <body>
 <div class="toolbar">
     <button id="render">Render PDF</button>
-    <select id="selectTemplate" onchange="loadTemplate(options[selectedIndex].value)">
+    <select id="selectTemplate" onchange="changeTemplate(options[selectedIndex].value)">
         <option value="whitespace.html">Whitespace</option>
         <option value="basic.html">Basic</option>
         <option value="all.html">All</option>
