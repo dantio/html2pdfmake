@@ -101,7 +101,7 @@ export const globalStyles = () => ({
     'text-decoration': 'underline'
   },
   hr: {
-    'border': '2px solid #9a9a9a',
+    'border': '1px solid #9a9a9a',
     'border-bottom': '0',
     'border-left': '0',
     'border-right': '0',
