@@ -101,9 +101,9 @@ export const globalStyles = () => ({
     'text-decoration': 'underline'
   },
   hr: {
-    'border-top': '2px solid #9a9a9a',
+    'border': '2px solid #9a9a9a',
     'border-bottom': '0',
-    'border-left': '0px solid black',
+    'border-left': '0',
     'border-right': '0',
     margin: '8px 0'
   },

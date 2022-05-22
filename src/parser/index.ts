@@ -44,7 +44,9 @@ export const parseChildren = (el: El, ctx: Context, parentStyles = {}): Item[] =
       collapseMargin(item, prevItem);
     }
 
-    if (isNewline && (items.length === 0 || !children[i + 1] || prevItem && 'stack' in prevItem)) {
+    // Skip new lines
+    const prevIsBlock = prevItem && ('stack' in prevItem || 'table' in prevItem || 'ul' in prevItem || 'ol' in prevItem);
+    if (isNewline && (items.length === 0 || !children[i + 1] || prevIsBlock)) {
       continue;
     }
 

@@ -14,4 +14,4 @@ export const isHeadline = (item: LazyItem) => item[META]?.[NODE] && (['H1', 'H2'
 
 export const isElement = (el: El): el is Element => el.nodeType === 1;
 export const isNode = (el: El): el is Node => el.nodeType === 3 || el.nodeType === 8;
-export const isCollapsable = (item?: Item): item is ItemCollapsable => typeof item !== 'undefined' && typeof item !== 'string' && ('stack' in item || 'ul' in item || 'ol' in item) && 'margin' in item;
+export const isCollapsable = (item?: Item): item is ItemCollapsable => typeof item !== 'undefined' && typeof item !== 'string' && ('stack' in item || 'ul' in item || 'ol' in item || 'table' in item) && 'margin' in item;
