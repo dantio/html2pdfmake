@@ -121,10 +121,11 @@ export const styleToProps = (item: LazyItemNode, styles: Styles, parentStyles: S
             break;
         }
         break;
-      case 'font-family':
-        const font = value.split(',').filter(f => !!f).map(f => f.replace(/["']/g, '').trim())
+      case 'font-family': {
+        const font = value.split(',').filter(f => !!f).map(f => f.replace(/["']/g, '').trim());
         props.font = font[0] || 'Roboto';
         break;
+      }
       case 'color':
         props.color = value;
         break;
