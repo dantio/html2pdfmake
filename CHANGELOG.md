@@ -1,4 +1,19 @@
 # html2pdfmake Changelog
+### [0.0.6](https://github.com/dantio/html2pdfmake/compare/v0.0.5...v0.0.6) (2022-05-31)
+
+
+### Features
+
+* use jsdelivr in example ([44d25b8](https://github.com/dantio/html2pdfmake/commit/44d25b8abbb18006bdbaa8db765f070d15da717d))
+
+
+### Bug Fixes
+
+* font-family parsing ([b04194b](https://github.com/dantio/html2pdfmake/commit/b04194ba8389b5e906f1c9435ce63afde2c9c929))
+* lint issue ([1b6a950](https://github.com/dantio/html2pdfmake/commit/1b6a9505d335e8824369bce2e47c9e35cd04d77d))
+* relative example file ([fca39ea](https://github.com/dantio/html2pdfmake/commit/fca39eaf28d021a089b5438c0c5144f6f8e1e57b))
+* set <hr> border to 1px ([e7875d8](https://github.com/dantio/html2pdfmake/commit/e7875d874dd2d7570b66356fe329be5f27ade72e))
+
 ### [0.0.5](https://github.com/dantio/html2pdfmake/compare/v0.0.4...v0.0.5) (2022-05-20)
 
 
