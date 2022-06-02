@@ -25,7 +25,7 @@
       if (location.hostname === 'localhost') {
         module = await import('./dist/html2pdfmake.mjs')
       } else {
-        module = await import('https://cdn.jsdelivr.net/npm/html2pdfmake@latest/dist/html2pdfmake.mjs')
+        module = await import('https://cdn.jsdelivr.net/npm/html2pdfmake/dist/html2pdfmake.mjs')
       }
 
       const {parse, simpleRender} = module;
