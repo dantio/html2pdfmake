@@ -27,7 +27,8 @@ export type Config = {
   collapseMargin: boolean
   collapseWhitespace: boolean
   render: (el: El, data: Record<string, unknown>) => El,
-  document: () => Document
+  document: () => Document,
+  parseCss: (style: NodeListOf<HTMLStyleElement>) => CssStyles
 }
 
 export type El = Element | Node;

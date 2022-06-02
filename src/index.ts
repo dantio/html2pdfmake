@@ -15,7 +15,7 @@ export const getContext = (_config: Config = defaultConfig()) => {
     ..._config
   };
 
-  return new Context(config, Object.assign({}, config.globalStyles, config.styles));
+  return new Context(config);
 };
 
 export const parse = (input: Element | string, _config: Config = defaultConfig()) => {
@@ -54,6 +54,10 @@ export const parseTemplate = (template: Element, _config: Config = defaultConfig
 
   const headers = headerFooterContent(root.querySelectorAll(':scope > header, body > header'), ctx);
   const footers = headerFooterContent(root.querySelectorAll(':scope > footer, body > footer'), ctx);
+
+  const styles = root.querySelectorAll('style');
+
+  ctx.setPageStyles(ctx.config.parseCss(styles));
 
   const main = root.querySelector('main');
   const title = root.querySelector('title');

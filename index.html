@@ -10,6 +10,7 @@
             integrity="sha512-k9XKlDENMt9s19gEl+L6F/r+OWAR4pesbUd8/SKQVMt3b1ECqsRXgLA9XnJoq4J9mjlxLQabfTxf3268lzpFUQ=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/@keeex/qrcodejs-kx@1.0.2/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cssjson@latest/cssjson.min.js"></script>
     <script type="module" defer>
       pdfMake.fonts = {
         Roboto: {
@@ -51,7 +52,19 @@
           footer,
           pageMargins
         } = parse(element, {
-          render: simpleRender
+          render: simpleRender,
+          parseCss: (styles) => {
+            if (!styles.length) {
+              return {}
+            }
+            const content = styles[0].innerHTML;
+            const css = CSSJSON.toJSON(content)
+            return Object.keys(css.children).reduce((result, key) => {
+              result[key] = css.children[key].attributes
+
+              return result;
+            }, {})
+          }
         });
 
         const output = document.getElementById('pdfmake');
@@ -171,6 +184,7 @@
         qr-code img {
             display: inline-block !important;
         }
+
         [data-value] {
             padding: 4px 8px;
             outline: 1px solid orange;
