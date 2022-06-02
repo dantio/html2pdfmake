@@ -14,13 +14,13 @@ import {getDefaultStyles, getInlineStyles} from './styles.js';
  * @param parentStyles pick styles
  */
 export const computeProps = (el: El, item: LazyItemNode, styles: CssStyles, parentStyles = {}) => {
-  const defaultStyles = getDefaultStyles(el, item, styles);
   const rootStyles = styles[':root'] || globalStyles()[':root'];
-  const inheritedStyles = inheritStyle(parentStyles);
 
+  const defaultStyles = getDefaultStyles(el, item, styles);
+  const inheritedStyles = inheritStyle(parentStyles);
   const cssStyles: Styles = Object.assign({}, defaultStyles, inheritedStyles, getInlineStyles(el));
 
-  const styleProps = styleToProps(item, cssStyles, Object.assign({}, rootStyles, inheritedStyles));
+  const styleProps = styleToProps(item, cssStyles, rootStyles);
   const attrProps = attrToProps(item);
   const props = {
     ...styleProps,

@@ -7,7 +7,7 @@ import {computeBorder} from './border.js';
 import {computeMargin} from './margin.js';
 import {computePadding} from './padding.js';
 
-export const styleToProps = (item: LazyItemNode, styles: Styles, parentStyles: Styles = {}) => {
+export const styleToProps = (item: LazyItemNode, styles: Styles, rootStyles: Styles = {}) => {
   const props: ComputedProps = {
     [META]: {
       [STYLE]: {},
@@ -20,7 +20,7 @@ export const styleToProps = (item: LazyItemNode, styles: Styles, parentStyles: S
   const table = isTable(item);
   const text = isTextSimple(item);
   const list = isList(item);
-  const rootFontSize = toUnit(parentStyles['font-size'] || '16px');
+  const rootFontSize = toUnit(rootStyles['font-size'] || '16px');
 
   if (isHeadline(item)) {
     meta[HANDLER] = handleHeadlineToc;

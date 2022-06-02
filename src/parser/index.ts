@@ -280,6 +280,25 @@ const getItemByRule = (el: El, ctx: Context): LazyItem | null => {
   throw new Error('Unsupported Node Type: ' + (el as El).nodeType);
 };
 
+const parseLazyChildren = (item: LazyItem, el: El, ctx: Context, cssStyles: Styles) => {
+  if ('stack' in item && typeof item.stack === 'function') {
+    const children = parseChildren(el, ctx, cssStyles);
+    item.stack = item.stack(children, ctx);
+  } else if ('text' in item && typeof item.text === 'function') {
+    const children = parseChildren(el, ctx, cssStyles);
+    item.text = item.text(children.filter(isTextOrLeaf), ctx);
+  } else if ('ul' in item && typeof item.ul === 'function') {
+    const children = parseChildren(el, ctx, cssStyles);
+    item.ul = item.ul(children, ctx);
+  } else if ('ol' in item && typeof item.ol === 'function') {
+    const children = parseChildren(el, ctx, cssStyles);
+    item.ol = item.ol(children, ctx);
+  } else if ('table' in item && typeof item.table.body === 'function') {
+    const children = parseChildren(el, ctx, cssStyles);
+    item.table.body = item.table.body(children, ctx);
+  }
+};
+
 export const processItems = (item: LazyItem, ctx: Context, parentStyles: Styles = {}): Item | null => {
   const el = item[META]?.[NODE];
 
@@ -288,22 +307,7 @@ export const processItems = (item: LazyItem, ctx: Context, parentStyles: Styles 
 
     Object.assign(item, props);
 
-    if ('stack' in item && typeof item.stack === 'function') {
-      const children = parseChildren(el, ctx, cssStyles);
-      item.stack = item.stack(children, ctx);
-    } else if ('text' in item && typeof item.text === 'function') {
-      const children = parseChildren(el, ctx, cssStyles);
-      item.text = item.text(children.filter(isTextOrLeaf), ctx);
-    } else if ('ul' in item && typeof item.ul === 'function') {
-      const children = parseChildren(el, ctx, cssStyles);
-      item.ul = item.ul(children, ctx);
-    } else if ('ol' in item && typeof item.ol === 'function') {
-      const children = parseChildren(el, ctx, cssStyles);
-      item.ol = item.ol(children, ctx);
-    } else if ('table' in item && typeof item.table.body === 'function') {
-      const children = parseChildren(el, ctx, cssStyles);
-      item.table.body = item.table.body(children, ctx);
-    }
+    parseLazyChildren(item, el, ctx, cssStyles);
   }
 
   return handleItem(item as Item);
