@@ -10,7 +10,7 @@ export const headerFooterContent = (els: NodeListOf<Element>, ctx: Context): Hea
   let index = 1;
   for (let i = 0; i < els.length; i++) {
     const el = els[i];
-    let dataPage: string | null = el.getAttribute('data-page');
+    const dataPage: string | null = el.getAttribute('data-page');
     let page: string | number = index;
 
     if (dataPage) {
