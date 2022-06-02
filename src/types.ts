@@ -26,6 +26,8 @@ export type Config = {
   customRule?: Rule
   collapseMargin: boolean
   collapseWhitespace: boolean
+  render: (el: El, data: Record<string, unknown>) => El,
+  document: () => Document
 }
 
 export type El = Element | Node;

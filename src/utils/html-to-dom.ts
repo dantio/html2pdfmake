@@ -1,7 +1,7 @@
 export const htmlToDom = (html: string): Element | null => {
   if (typeof DOMParser !== 'undefined') {
     const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
+    const doc = parser.parseFromString('<body>' + html + '</body>', 'text/html');
     return doc.body;
   } else if (typeof document !== 'undefined' && typeof document.createDocumentFragment === 'function') {
     const fragment = document.createDocumentFragment();

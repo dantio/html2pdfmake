@@ -1,0 +1,38 @@
+<template>
+    <title>Rechnung</title>
+    <meta name="author" content="Author">
+    <meta name="page-orientation" content="landscape">
+    <meta name="page-size" content="A5">
+    <meta name="page-margins" content="100, 100, 100, 100">
+    <header>
+        <p>Header Page1</p>
+    </header>
+    <header data-page="default">
+        <p>Default Header</p>
+    </header>
+    <header>
+        <p>Header Page2</p>
+    </header>
+
+    <main>
+        <h1>Template</h1>
+        <p>The next element is not displayed. (display: none)</p>
+        <p style="display: none">First paragraph</p>
+        <hr>
+        <p style="page-break-after: always">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Confectum ponit
+            legam, perferendis nomine miserum, animi. Moveat nesciunt triari naturam.</p>
+        <p style="page-break-after: always">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Confectum ponit
+            legam, perferendis nomine miserum, animi. Moveat nesciunt triari naturam.</p>
+    </main>
+
+    <footer data-page="odd">
+        <p style="text-align: right; padding-right: 30px">Page Odd: <span data-value="currentPage"></span>/<b data-value="pageCount"></b>
+        </p>
+    </footer>
+    <footer data-page="2">
+        <p style="padding: 0 40px">Footer Page 2</p>
+    </footer>
+    <footer data-page="default">
+        <p>Default Footer Page 2</p>
+    </footer>
+</template>

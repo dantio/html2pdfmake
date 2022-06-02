@@ -12,7 +12,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@keeex/qrcodejs-kx@1.0.2/qrcode.min.js"></script>
     <script type="module" defer>
       pdfMake.fonts = {
-        // download default Roboto font from cdnjs.com
         Roboto: {
           normal: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.4/fonts/Roboto/Roboto-Regular.ttf',
           bold: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.4/fonts/Roboto/Roboto-Medium.ttf',
@@ -28,38 +27,50 @@
         module = await import('https://cdn.jsdelivr.net/npm/html2pdfmake@latest/dist/html2pdfmake.mjs')
       }
 
-      const {parse} = module;
+      const {parse, simpleRender} = module;
+      let isTemplate = false;
 
       async function renderPdf() {
-        const el = document.getElementById('template');
 
-        const {content, images, patterns} = parse(el);
+        let element = document.getElementById('inner').cloneNode(true)
 
-        document.getElementById('pdfmake').value = JSON.stringify(content, null, 2);
+        if (isTemplate) {
+          const template = document.createElement('template');
+          template.content.append(...element.children);
+          element = template
+        }
 
-        pdfMake.createPdf({
-          compress: true,
-          info: {
-            title: 'Template',
-          },
-
-          styles: {
-            '.headline2': {
-              color: 'red'
-            },
-            'tr:nth-child(even)': {
-              color: 'blue'
-            },
-          },
-          content: [
-            ...content
-          ],
+        const {
+          content,
           images,
-          patterns
+          patterns,
+          info,
+          pageSize,
+          pageOrientation,
+          header,
+          footer,
+          pageMargins
+        } = parse(element, {
+          render: simpleRender
+        });
+
+        const output = document.getElementById('pdfmake');
+        output.value = JSON.stringify(content, null, 2);
+        pdfMake.createPdf({
+          info,
+          pageSize,
+          pageOrientation,
+          content,
+          images,
+          patterns,
+          header,
+          footer,
+          pageMargins
         }).getBase64().then(base64 => {
           const iframe = document.getElementById('preview');
           iframe.src = 'data:application/pdf;base64,' + base64;
         }).catch(e => {
+          output.value = 'Error: See more in logs \n\n' + e.message;
           console.error(e);
         })
       }
@@ -86,12 +97,26 @@
           return
         }
 
-        return fetch('examples/' + name).then(response => response.text()).then(template => {
-          document.getElementById('template').innerHTML = template;
-        }).then(() => {
-          initQr();
-          renderPdf();
-        })
+        return fetch('examples/' + name).then(response => response.text())
+          .then(template => {
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString('<body>' + template + '</body>', 'text/html');
+            const editor = document.getElementById('inner');
+            if (doc.body.children[0].nodeName === 'TEMPLATE') {
+              const node = document.importNode(doc.body.children[0].content, true);
+              editor.innerHTML = '';
+              editor.appendChild(node)
+              isTemplate = true;
+            } else {
+              editor.innerHTML = template;
+              isTemplate = false;
+            }
+            return template;
+          }).then((template) => {
+            initQr();
+            renderPdf();
+          })
       }
 
       window.loadTemplate = loadTemplate;
@@ -111,8 +136,14 @@
         }
 
         .wrapper {
+            padding: 10px;
             display: flex;
             font-family: 'Roboto', sans-serif;
+            gap: 16px;
+        }
+
+        .wrapper > div {
+            width: 100%;
         }
 
         .page {
@@ -125,7 +156,7 @@
             padding: 20px;
         }
 
-        .page > div {
+        #inner {
             padding: 16px;
             position: relative;
             width: 21cm;
@@ -140,6 +171,10 @@
         qr-code img {
             display: inline-block !important;
         }
+        [data-value] {
+            padding: 4px 8px;
+            outline: 1px solid orange;
+        }
     </style>
 </head>
 <body>
@@ -152,17 +187,29 @@
         <option value="style1.html">Style1</option>
         <option selected="selected" value="margin.html">Margin</option>
         <option value="tables.html">Tables</option>
+        <option value="template.html">Template</option>
     </select>
 </div>
+
 <div class="wrapper">
     <div id="template" class="page" contenteditable="true">
-        <p>Select a template</p>
+        <div id="inner">
+            <p>Select a template</p>
+        </div>
     </div>
-    <iframe id="preview" width="100%" height="800px"></iframe>
+
+    <div>
+        <iframe id="preview" width="100%" height="800px"></iframe>
+    </div>
 </div>
 
 <div>
-    <textarea style="width: 100%; height: 500px" id="pdfmake"></textarea>
+    <details>
+        <summary>Output for PDFMAKE</summary>
+        <div style="display:flex; padding: 20px">
+            <textarea style="width: 100%; height: 500px" id="pdfmake"></textarea>
+        </div>
+    </details>
 </div>
 </body>
 </html>

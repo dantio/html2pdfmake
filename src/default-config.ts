@@ -6,4 +6,6 @@ export const defaultConfig = (): Config => ({
   styles: {},
   collapseMargin: true,
   collapseWhitespace: true,
+  render: (el) => el,
+  document: () => window.document
 });
