@@ -4,7 +4,7 @@ import {CssStyles, El, LazyItemNode, Styles} from '../types.js';
 import {attrToProps} from './attr-to-props.js';
 import {inheritStyle} from './inherit-style.js';
 import {styleToProps} from './style-to-props.js';
-import {getDefaultStyles, getInlineStyles} from './styles.js';
+import {selectStyles, getInlineStyles} from './styles.js';
 
 /**
  *
@@ -16,12 +16,16 @@ import {getDefaultStyles, getInlineStyles} from './styles.js';
 export const computeProps = (el: El, item: LazyItemNode, styles: CssStyles, parentStyles = {}) => {
   const rootStyles = styles[':root'] || globalStyles()[':root'];
 
-  const defaultStyles = getDefaultStyles(el, item, styles);
+  const attrProps = attrToProps(item);
+
+  const selectors = (attrProps.style || []).concat(el.nodeName.toLowerCase());
+
+  const elementStyles = selectStyles(selectors, styles);
   const inheritedStyles = inheritStyle(parentStyles);
-  const cssStyles: Styles = Object.assign({}, defaultStyles, inheritedStyles, getInlineStyles(el));
+  const cssStyles: Styles = Object.assign({}, elementStyles, inheritedStyles, getInlineStyles(el));
 
   const styleProps = styleToProps(item, cssStyles, rootStyles);
-  const attrProps = attrToProps(item);
+
   const props = {
     ...styleProps,
     ...attrProps,

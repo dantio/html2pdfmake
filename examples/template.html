@@ -6,8 +6,8 @@
     <meta name="page-margins" content="100, 100, 100, 100">
 
     <style>
-        h1 {
-            color: red;
+        .violet {
+            color: violet;
         }
     </style>
 
@@ -18,11 +18,12 @@
         <p>Default Header</p>
     </header>
     <header>
-        <p>Header Page2</p>
+        <p class="violet">Violet Header Page2</p>
     </header>
 
     <main>
         <h1>Template</h1>
+        <p class="violet">I'm violet</p>
         <p>The next element is not displayed. (display: none)</p>
         <p style="display: none">First paragraph</p>
         <hr>
@@ -33,7 +34,8 @@
     </main>
 
     <footer data-page="odd">
-        <p style="text-align: right; padding-right: 30px">Page Odd: <span data-value="currentPage"></span>/<b data-value="pageCount"></b>
+        <p style="text-align: right; padding-right: 30px">Page Odd: <span data-value="currentPage"></span>/<b
+                data-value="pageCount"></b>
         </p>
     </footer>
     <footer data-page="2">
