@@ -1,6 +1,6 @@
 {
   "name": "html2pdfmake",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "HTML/DOM to pdfmake",
   "type": "module",
   "author": "Daniil Tomilow",
@@ -47,7 +47,11 @@
   "types": "./lib/index.d.ts",
   "browser": "./lib/html2pdfmake.js",
   "browser:esm": "./dist/html2pdfmake.mjs",
-  "browserslist": ["> 0.5%","last 2 versions", "not dead"],
+  "browserslist": [
+    "> 0.5%",
+    "last 2 versions",
+    "not dead"
+  ],
   "scripts": {
     "build": "rimraf lib dist && tsc && concurrently \"npm run build:cjs\" \"npm run build:browser\"",
     "test": "mocha --reporter=dot",

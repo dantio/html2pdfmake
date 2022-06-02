@@ -1,4 +1,20 @@
 # html2pdfmake Changelog
+### [0.0.7](https://github.com/dantio/html2pdfmake/compare/v0.0.6...v0.0.7) (2022-06-02)
+
+
+### Features
+
+* support <style> in templates ([41b205c](https://github.com/dantio/html2pdfmake/commit/41b205c62181466298c992862a6848022d558a93))
+* template support with header/footer and meta info for pdfmake ([dea03e4](https://github.com/dantio/html2pdfmake/commit/dea03e4ccff4f941182f7687ee7d46862e8e45d1))
+
+
+### Bug Fixes
+
+* browserlist in package.json ([3618a9f](https://github.com/dantio/html2pdfmake/commit/3618a9f662453319a15317c59cd97e34eff14d79))
+* css selectors ([72153e2](https://github.com/dantio/html2pdfmake/commit/72153e2cecd7b54b2c8f99359fb9981a23304838))
+* lint error ([bd443ab](https://github.com/dantio/html2pdfmake/commit/bd443ab98b9d9a9aca50fef769259a0e2f031616))
+* rem handling ([a8876b9](https://github.com/dantio/html2pdfmake/commit/a8876b95ad6286e4fb300539cdffee634f55ae94))
+
 ### [0.0.6](https://github.com/dantio/html2pdfmake/compare/v0.0.5...v0.0.6) (2022-05-31)
 
 
