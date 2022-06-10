@@ -1,5 +1,5 @@
 import {META, NODE} from '../constants.js';
-import {Item, Leaf, Text} from '../types.js';
+import {Item, Leaf, Text} from '../types/item.types.js';
 import {merge} from '../utils/merge.js';
 
 export const addTocItem = (item: Item, tocStyle = {}) => {

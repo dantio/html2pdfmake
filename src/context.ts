@@ -1,4 +1,6 @@
-import {Config, CssStyles} from './types.js';
+import {defaultConfig} from './default-config.js';
+import {Config} from './types/config.types';
+import {CssStyles} from './types/global.types.js';
 import {merge} from './utils/merge.js';
 
 export class Context {
@@ -24,3 +26,12 @@ export class Context {
     this.pageStyles = styles;
   }
 }
+
+export const createContext = (_config: Config = defaultConfig()) => {
+  const config = {
+    ...defaultConfig(),
+    ..._config
+  };
+
+  return new Context(config);
+};

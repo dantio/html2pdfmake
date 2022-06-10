@@ -1,4 +1,5 @@
-import {CssStyles, El, Styles} from '../types.js';
+
+import {CssStyles, El, Styles} from '../types/global.types.js';
 
 /**
  * @param el DOM Element

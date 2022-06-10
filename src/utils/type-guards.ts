@@ -1,5 +1,18 @@
 import {META, NODE} from '../constants.js';
-import {El, Image, Item, ItemCollapsable, LazyItem, Leaf, Ol, Stack, Table, Text, TextArray, Ul} from '../types.js';
+import {El} from '../types/global.types.js';
+import {
+  Image,
+  Item,
+  ItemCollapsable,
+  Leaf,
+  Ol,
+  Stack,
+  Table,
+  Text,
+  TextArray,
+  Ul
+} from '../types/item.types.js';
+import {LazyItem} from '../types/lazy-item.types.js';
 
 export const isNotText = (item: LazyItem | string): item is Item => typeof item !== 'string';
 export const isColgroup = (item: LazyItem): item is Stack => item?.[META]?.[NODE]?.nodeName === 'COLGROUP';

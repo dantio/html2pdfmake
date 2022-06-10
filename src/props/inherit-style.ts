@@ -1,4 +1,4 @@
-import {Styles} from '../types.js';
+import {Styles} from '../types/global.types.js';
 
 export const inheritStyle = (styles: Styles): Styles => {
   // TODO what do we want to exclude ?

@@ -1,5 +1,6 @@
 import {MARGIN, META, PADDING, POS_BOTTOM, POS_LEFT, POS_RIGHT, POS_TOP} from '../constants.js';
-import {ComputedProps, LazyItem} from '../types.js';
+import {LazyItem} from '../types/lazy-item.types.js';
+import {ComputedProps} from '../types/props.types.js';
 import {isTable, isTdOrTh} from '../utils/type-guards.js';
 import {toUnit} from '../utils/unit.js';
 

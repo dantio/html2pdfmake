@@ -7,7 +7,7 @@ import {
   START_WITH_NEWLINE,
   START_WITH_WHITESPACE
 } from '../constants.js';
-import {Text} from '../types.js';
+import {Text} from '../types/item.types.js';
 
 export const parseText = (el: Element | Node): Text | null => {
   const text = el.textContent;

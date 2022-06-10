@@ -1,5 +1,6 @@
 import {MARGIN, META, PADDING} from '../constants.js';
-import {ComputedProps, LazyItem} from '../types.js';
+import {LazyItem} from '../types/lazy-item.types.js';
+import {ComputedProps} from '../types/props.types.js';
 
 export const computeMargin = (itemProps: ComputedProps, item: LazyItem, value: number, index: number) => {
   const margin = itemProps[META][MARGIN] || item[META]?.[MARGIN] || [0, 0, 0, 0];

@@ -26,7 +26,6 @@ describe('Parser', () => {
         const dom = html(template);
         const {content}: any = parse(dom);
 
-
         expect(content[0].text[0].text[0].text[0].text).to.equal('Text');
         expect(content[0].text[1].text[0].text).to.equal(' ');
         expect(content[0].text[2].text[0].text[0].text).to.equal('Text');
@@ -230,4 +229,17 @@ describe('Parser', () => {
 
   });
 
+  describe('Link', () => {
+    it('linkify', () => {
+      const template = '<p><a href="#target">Link1<span>Inside</span></a><a href="example.com">Link2<span>Inside</span></a></p>';
+      const {content}: any = parse(html(template));
+      //                <p>      wrapper <a>     wrapper  text
+      expect(content[0].stack[0].text[0].text[0].text[0].text[0].text).to.equal('Link1');
+      expect(content[0].stack[0].text[1].text[0].text[0].text[0].text).to.equal('Link2');
+      expect(content[0].stack[0].text[0].text[0].text[0].linkToDestination).to.equal('target');
+      expect(content[0].stack[0].text[0].text[0].text[1].linkToDestination).to.equal('target');
+      expect(content[0].stack[0].text[1].text[0].text[0].link).to.equal('example.com');
+      expect(content[0].stack[0].text[1].text[0].text[1].link).to.equal('example.com');
+    })
+  })
 });

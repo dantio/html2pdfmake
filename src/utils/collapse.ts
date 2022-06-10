@@ -1,5 +1,5 @@
 import {IS_WHITESPACE, MARGIN, META, PADDING, POS_BOTTOM, POS_TOP} from '../constants.js';
-import {Item, Leaf, Text, TextArray} from '../types.js';
+import {Item, Leaf, Text, TextArray} from '../types/item.types.js';
 import {isCollapsable, isTextArray} from './type-guards.js';
 
 export const collapseMargin = (item: Item, prevItem?: Item) => {
@@ -40,7 +40,7 @@ export const collapseWhitespace = (item: TextArray, nextText: TextArray) => {
   const prevLastText = findLastDeep(item);
   const nextFirstTextArray = findFirstArrayDeep(nextText);
 
-  if (prevLastText && prevLastText[META]?.[IS_WHITESPACE] && nextFirstTextArray?.[0][META]?.[IS_WHITESPACE]) {
+  if (prevLastText && prevLastText[META]?.[IS_WHITESPACE] && nextFirstTextArray?.[0]?.[META]?.[IS_WHITESPACE]) {
     nextFirstTextArray.shift();
   }
 };

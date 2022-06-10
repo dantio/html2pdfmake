@@ -1,4 +1,5 @@
-import {ComputedProps, LazyItemNode} from '../types.js';
+import {LazyItemNode} from '../types/lazy-item.types.js';
+import {ComputedProps} from '../types/props.types.js';
 import {isTable, isTdOrTh} from '../utils/type-guards.js';
 import {toUnit} from '../utils/unit.js';
 

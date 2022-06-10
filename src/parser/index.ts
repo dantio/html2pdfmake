@@ -7,17 +7,20 @@ import {
   META,
   NODE,
   START_WITH_NEWLINE,
-  START_WITH_WHITESPACE
+  START_WITH_WHITESPACE,
+  STYLE
 } from '../constants.js';
 import {Context} from '../context.js';
 import {handleItem} from '../handler/index.js';
 import {computeProps} from '../props/index.js';
-import {El, Item, LazyItem, Styles, TextArray} from '../types.js';
+import {El, Styles} from '../types/global.types.js';
+import {Item, TextArray} from '../types/item.types.js';
+import {LazyItem} from '../types/lazy-item.types.js';
 import {collapseMargin, collapseWhitespace} from '../utils/collapse.js';
-import {getChildItems} from '../utils/index.js';
 import {isElement, isNode, isTextArray, isTextOrLeaf} from '../utils/type-guards.js';
 import {toUnit} from '../utils/unit.js';
 import {parseImg} from './parse-img.js';
+import {parseLink} from './parse-link.js';
 import {parseSvg} from './parse-svg.js';
 import {parseTable} from './parse-table.js';
 import {parseText} from './parse-text.js';
@@ -44,13 +47,14 @@ export const parseChildren = (el: El, ctx: Context, parentStyles = {}): Item[] =
       collapseMargin(item, prevItem);
     }
 
+    const prevIsBlock = prevItem && !('text' in prevItem);
+
     // Skip new lines
-    const prevIsBlock = prevItem && ('stack' in prevItem || 'table' in prevItem || 'ul' in prevItem || 'ol' in prevItem);
     if (isNewline && (items.length === 0 || !children[i + 1] || prevIsBlock)) {
       continue;
     }
 
-    // Stack item
+    // Block item
     if (!('text' in item)) {
       items.push(item);
       continue;
@@ -61,9 +65,11 @@ export const parseChildren = (el: El, ctx: Context, parentStyles = {}): Item[] =
     const endWithWhiteSpace = !!item[META]?.[END_WITH_WHITESPACE];
     const startWithWhitespace = !!item[META]?.[START_WITH_WHITESPACE];
     const isWhitespace = !!item[META]?.[IS_WHITESPACE];
+    const isAbsolutePosition = item?.[META]?.[STYLE]?.position === 'absolute';
 
     const textItem: TextArray = Array.isArray(item.text)
-      ? item as TextArray : {text: [isNewline || isWhitespace ? addWhitespace('newLine') : item]};
+      ? item as TextArray
+      : {text: [isNewline || isWhitespace ? addWhitespace('newLine') : item]};
 
     if (!isNewline && !isWhitespace) {
       // https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Whitespace
@@ -80,11 +86,14 @@ export const parseChildren = (el: El, ctx: Context, parentStyles = {}): Item[] =
 
     // Append text to last text element otherwise a new line is created
     if (isTextArray(prevItem)) {
+
       if (ctx.config.collapseWhitespace) {
         collapseWhitespace(prevItem, textItem);
       }
 
       prevItem.text.push(textItem);
+    } else if (isAbsolutePosition) {
+      items.push(textItem);
     } else {
       // wrap so the next text items  will be appended to it
       items.push({
@@ -130,37 +139,7 @@ export const getElementRule = (el: Element): (el: Element, ctx: Context) => Lazy
           return parseElement(el);
         }
 
-        const linkify = (item: Item) => {
-          const children = getChildItems(item);
-          ([] as Item[]).concat(children)
-            .forEach((link) => {
-              if (typeof link !== 'string') {
-                if (href[0] === '#') {
-                  link.linkToDestination = href.slice(1);
-                } else {
-                  link.link = href;
-                }
-              }
-              linkify(link);
-            });
-        };
-
-        return {
-          text: items => {
-            items.forEach((link) => {
-              if (typeof link !== 'string') {
-                if (href[0] === '#') {
-                  link.linkToDestination = href.slice(1);
-                } else {
-                  link.link = href;
-                }
-              }
-              linkify(link);
-            });
-
-            return items;
-          }
-        };
+        return parseLink(href);
       };
     case 'br':
       return () => ({

@@ -1,6 +1,7 @@
 import {HANDLER, ITEMS, META} from '../constants.js';
 import {handleTable} from '../handler/index.js';
-import {LazyTable, TableDefinition} from '../types.js';
+import {LazyTable} from '../types/lazy-item.types.js';
+import {TableDefinition} from '../types/table.types.js';
 import {getChildItems} from '../utils/index.js';
 import {isColgroup} from '../utils/type-guards.js';
 

@@ -1,6 +1,6 @@
 import {Context} from '../context.js';
 import {parseChildren} from '../parser/index.js';
-import {Item} from '../types.js';
+import {Item} from '../types/item.types.js';
 
 type HeaderFooter = Record<string | number, (data: Record<string, unknown>) => Item[]>
 

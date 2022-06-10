@@ -1,5 +1,5 @@
 import {HANDLER, META, PDFMAKE} from '../constants.js';
-import {Item} from '../types.js';
+import {Item} from '../types/item.types.js';
 import {merge} from '../utils/merge.js';
 
 export * from './handle-columns.js';

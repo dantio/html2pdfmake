@@ -1,5 +1,6 @@
 import {ITEMS, META, PADDING, POS_BOTTOM, POS_LEFT, POS_RIGHT, POS_TOP, STYLE} from '../constants.js';
-import {Item, Table, TableLayout} from '../types.js';
+import {Item, Table} from '../types/item.types.js';
+import {TableLayout} from '../types/table.types.js';
 import {isTable} from '../utils/type-guards.js';
 import {getUnitOrValue} from '../utils/unit.js';
 

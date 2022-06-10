@@ -1,31 +1,23 @@
 import {getPatterns} from './constants.js';
-import {Context} from './context.js';
+import {createContext} from './context.js';
 import {defaultConfig} from './default-config.js';
 import {parseChildren} from './parser/index.js';
 import {headerFooter, headerFooterContent} from './render/header-footer.js';
 import {simpleRender} from './render/simple-render.js';
-import {Config} from './types.js';
+import {Config} from './types/config.types';
+import {DocDefinition} from './types/doc.types.js';
 import {htmlToDom} from './utils/html-to-dom.js';
 
-export {simpleRender};
+export {simpleRender, getPatterns};
 
-export const getContext = (_config: Config = defaultConfig()) => {
-  const config = {
-    ...defaultConfig(),
-    ..._config
-  };
-
-  return new Context(config);
-};
-
-export const parse = (input: Element | string, _config: Config = defaultConfig()) => {
+export const parse = (input: Document | Element | string, _config: Config = defaultConfig()): DocDefinition => {
   const root = typeof input === 'string' ? htmlToDom(input) : input;
 
-  if (root?.nodeName === 'TEMPLATE' || root?.nodeName === 'HTML') {
+  if (root?.nodeName === 'TEMPLATE' || root?.nodeName === 'HTML' || root?.nodeName === '#document') {
     return parseTemplate(root, _config);
   }
 
-  const ctx = getContext(_config);
+  const ctx = createContext(_config);
   const content = root !== null ? parseChildren(root, ctx) : [];
 
   return {
@@ -47,10 +39,12 @@ export const parse = (input: Element | string, _config: Config = defaultConfig()
   };
 };
 
-export const parseTemplate = (template: Element, _config: Config = defaultConfig()) => {
-  const ctx = getContext(_config);
+export const parseTemplate = (template: Element | Document, _config: Config = defaultConfig()): DocDefinition => {
+  const ctx = createContext(_config);
 
-  const root = template.nodeName === 'TEMPLATE' ? ctx.config.document().importNode((template as HTMLTemplateElement).content, true) : template;
+  const root = template.nodeName === 'TEMPLATE'
+    ? ctx.config.document().importNode((template as HTMLTemplateElement).content, true)
+    : template.nodeName === '#document' ? (template as Document).documentElement : template;
 
   const headers = headerFooterContent(root.querySelectorAll(':scope > header, body > header'), ctx);
   const footers = headerFooterContent(root.querySelectorAll(':scope > footer, body > footer'), ctx);
@@ -93,7 +87,7 @@ export const parseTemplate = (template: Element, _config: Config = defaultConfig
     patterns: getPatterns(),
 
     pageSize: pageSize?.getAttribute('content') || 'A4',
-    pageOrientation: pageOrientation?.getAttribute('content') || 'portrait',
+    pageOrientation: pageOrientation?.getAttribute('content') === 'landscape' ? 'landscape' : 'portrait',
     pageMargins: margins,
   };
 };

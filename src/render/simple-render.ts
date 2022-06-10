@@ -1,4 +1,4 @@
-import {El} from '../types.js';
+import {El} from '../types/global.types.js';
 
 export const simpleRender = (el: El, data: Record<string, unknown>) => {
   const clone = el.cloneNode(true) as Element;

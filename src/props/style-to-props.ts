@@ -1,6 +1,9 @@
-import {HANDLER, META, NODE, POS_BOTTOM, POS_LEFT, POS_RIGHT, POS_TOP, POSITION, STYLE} from '../constants.js';
+import {HANDLER, META, NODE, POS_BOTTOM, POS_LEFT, POS_RIGHT, POS_TOP, STYLE} from '../constants.js';
 import {handleColumns, handleHeadlineToc, handleImg} from '../handler/index.js';
-import {ComputedProps, LazyItemNode, Styles, Table} from '../types.js';
+import {Styles} from '../types/global.types.js';
+import {Table} from '../types/item.types.js';
+import {LazyItemNode} from '../types/lazy-item.types.js';
+import {ComputedProps} from '../types/props.types.js';
 import {isHeadline, isImage, isList, isTable, isTdOrTh, isTextSimple} from '../utils/type-guards.js';
 import {expandValueToUnits, toUnit, toUnitOrValue} from '../utils/unit.js';
 import {computeBorder} from './border.js';
@@ -190,10 +193,8 @@ export const styleToProps = (item: LazyItemNode, styles: Styles, rootStyles: Sty
         break;
       case 'position':
         if (value === 'absolute') {
-          meta[POSITION] = 'absolute';
           props.absolutePosition = {};
         } else if (value === 'relative') {
-          meta[POSITION] = 'relative';
           props.relativePosition = {};
         }
         break;

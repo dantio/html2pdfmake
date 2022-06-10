@@ -1,5 +1,5 @@
 import {IS_WHITESPACE, META, STYLE} from '../constants.js';
-import {Column, Item, ItemNode} from '../types.js';
+import {Column, Item, ItemNode} from '../types/item.types.js';
 import {getChildItems} from '../utils/index.js';
 import {toUnitOrValue} from '../utils/unit.js';
 

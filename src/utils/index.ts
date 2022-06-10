@@ -1,4 +1,4 @@
-import {Item} from '../types.js';
+import {Item} from '../types/item.types.js';
 import {isNotText} from './type-guards.js';
 
 export const getChildItems = (item: Item): Item[] => {

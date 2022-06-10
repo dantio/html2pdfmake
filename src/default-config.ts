@@ -1,5 +1,5 @@
 import {globalStyles} from './global-styles.js';
-import {Config} from './types.js';
+import {Config} from './types/config.types.js';
 
 export const defaultConfig = (): Config => ({
   globalStyles: globalStyles(),

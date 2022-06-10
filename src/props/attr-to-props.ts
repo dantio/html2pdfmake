@@ -1,6 +1,8 @@
 import {HANDLER, META, NODE, PDFMAKE, STYLE} from '../constants.js';
 import {addTocItem} from '../handler/index.js';
-import {ComputedProps, Item, LazyItemNode} from '../types.js';
+import {Item} from '../types/item.types.js';
+import {LazyItemNode} from '../types/lazy-item.types.js';
+import {ComputedProps} from '../types/props.types.js';
 import {getUniqueId} from '../utils/unique-id.js';
 import {toUnit} from '../utils/unit.js';
 

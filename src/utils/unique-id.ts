@@ -1,5 +1,5 @@
 import {META, NODE, UID} from '../constants.js';
-import {LazyItem} from '../types.js';
+import {LazyItem} from '../types/lazy-item.types.js';
 import {isElement} from './type-guards.js';
 
 let _uid = 0;
