@@ -10,5 +10,15 @@ export const parseColor = (color: string) => {
     return rgb2hex(color);
   }
 
-  return 'black';
+  // TODO parse and take from rootStyle
+  if (color.startsWith('var')) {
+    return 'black';
+  }
+
+  // TODO
+  if (color === 'transparent') {
+    return 'white';
+  }
+
+  return color;
 };

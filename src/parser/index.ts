@@ -19,12 +19,12 @@ import {LazyItem} from '../types/lazy-item.types.js';
 import {collapseMargin, collapseWhitespace} from '../utils/collapse.js';
 import {isElement, isNode, isTextArray, isTextOrLeaf} from '../utils/type-guards.js';
 import {toUnit} from '../utils/unit.js';
+import {addWhitespace} from '../utils/whitespace.js';
 import {parseImg} from './parse-img.js';
 import {parseLink} from './parse-link.js';
 import {parseSvg} from './parse-svg.js';
 import {parseTable} from './parse-table.js';
 import {parseText} from './parse-text.js';
-import {addWhitespace} from './whitespace.js';
 
 const parseAsHTMLCollection = (el: El): el is Element => ['TABLE', 'TBODY', 'TR', 'COLGROUP', 'COL', 'UL', 'OL', 'SELECT'].includes(el.nodeName) && 'children' in el;
 export const stackRegex = /^(address|blockquote|body|center|colgroup|dir|div|dl|fieldset|form|h[1-6]|hr|isindex|menu|noframes|noscript|ol|p|pre|table|ul|dd|dt|frameset|li|tbody|td|tfoot|th|thead|tr|html)$/i;
