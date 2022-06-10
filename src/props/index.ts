@@ -21,7 +21,8 @@ export const computeProps = (el: El, item: LazyItemNode, ctx: Context, parentSty
 
   const attrProps = attrToProps(item);
 
-  const selectors = (attrProps.style || []).concat(el.nodeName.toLowerCase());
+  // TODO improve sort by specificity
+  const selectors = (attrProps.style || []).concat(el.nodeName.toLowerCase()).sort().reverse();
 
   const elementStyles = selectStyles(selectors, styles);
   const inheritedStyles = inheritStyle(parentStyles, el);
