@@ -12,14 +12,16 @@
     <script src="https://cdn.jsdelivr.net/npm/@keeex/qrcodejs-kx@1.0.2/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/cssjson@latest/cssjson.min.js"></script>
     <script type="module" defer>
-      pdfMake.fonts = {
+      const fonts = {
         Roboto: {
           normal: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.4/fonts/Roboto/Roboto-Regular.ttf',
           bold: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.4/fonts/Roboto/Roboto-Medium.ttf',
           italics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.4/fonts/Roboto/Roboto-Italic.ttf',
           bolditalics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.4/fonts/Roboto/Roboto-MediumItalic.ttf'
         },
-      }
+      };
+
+      pdfMake.fonts = fonts
 
       let module;
       if (location.hostname === 'localhost') {
@@ -32,7 +34,6 @@
       let isTemplate = false;
 
       async function renderPdf() {
-
         let element = document.getElementById('inner').cloneNode(true)
 
         if (isTemplate) {
@@ -64,7 +65,8 @@
 
               return result;
             }, {})
-          }
+          },
+          fonts
         });
 
         const output = document.getElementById('pdfmake');

@@ -1,9 +1,9 @@
-import {Styles} from '../types/global.types.js';
+import {El, Styles} from '../types/global.types.js';
 
-export const inheritStyle = (styles: Styles): Styles => {
+export const inheritStyle = (styles: Styles, el: El): Styles => {
   // TODO what do we want to exclude ?
   const pick: Record<string, boolean> = {
-    color: true,
+    color: el.nodeName !== 'A',
     'font-family': true,
     'font-size': true,
     'font-weight': true,

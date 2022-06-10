@@ -282,7 +282,7 @@ export const processItems = (item: LazyItem, ctx: Context, parentStyles: Styles 
   const el = item[META]?.[NODE];
 
   if (typeof item !== 'string' && el) {
-    const {cssStyles, props} = computeProps(el, item, ctx.styles, parentStyles);
+    const {cssStyles, props} = computeProps(el, item, ctx, parentStyles);
 
     Object.assign(item, props);
 

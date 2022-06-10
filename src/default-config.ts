@@ -8,5 +8,6 @@ export const defaultConfig = (): Config => ({
   collapseWhitespace: true,
   render: (el) => el,
   document: () => window.document,
-  parseCss: () => ({})
+  parseCss: () => ({}),
+  defaultFont: 'Roboto'
 });

@@ -10,7 +10,7 @@ import {htmlToDom} from './utils/html-to-dom.js';
 
 export {simpleRender, getPatterns};
 
-export const parse = (input: Document | Element | string, _config: Config = defaultConfig()): DocDefinition => {
+export const parse = (input: Document | Element | string, _config: Partial<Config> = defaultConfig()): DocDefinition => {
   const root = typeof input === 'string' ? htmlToDom(input) : input;
 
   if (root?.nodeName === 'TEMPLATE' || root?.nodeName === 'HTML' || root?.nodeName === '#document') {
@@ -39,7 +39,7 @@ export const parse = (input: Document | Element | string, _config: Config = defa
   };
 };
 
-export const parseTemplate = (template: Element | Document, _config: Config = defaultConfig()): DocDefinition => {
+export const parseTemplate = (template: Element | Document, _config: Partial<Config> = defaultConfig()): DocDefinition => {
   const ctx = createContext(_config);
 
   const root = template.nodeName === 'TEMPLATE'

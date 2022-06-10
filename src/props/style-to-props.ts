@@ -1,16 +1,18 @@
 import {HANDLER, META, NODE, POS_BOTTOM, POS_LEFT, POS_RIGHT, POS_TOP, STYLE} from '../constants.js';
+import {Context} from '../context.js';
 import {handleColumns, handleHeadlineToc, handleImg} from '../handler/index.js';
 import {Styles} from '../types/global.types.js';
 import {Table} from '../types/item.types.js';
 import {LazyItemNode} from '../types/lazy-item.types.js';
 import {ComputedProps} from '../types/props.types.js';
+import {parseColor} from '../utils/color.js';
 import {isHeadline, isImage, isList, isTable, isTdOrTh, isTextSimple} from '../utils/type-guards.js';
 import {expandValueToUnits, toUnit, toUnitOrValue} from '../utils/unit.js';
 import {computeBorder} from './border.js';
 import {computeMargin} from './margin.js';
 import {computePadding} from './padding.js';
 
-export const styleToProps = (item: LazyItemNode, styles: Styles, rootStyles: Styles = {}) => {
+export const styleToProps = (item: LazyItemNode, ctx: Context, styles: Styles, rootStyles: Styles = {}) => {
   const props: ComputedProps = {
     [META]: {
       [STYLE]: {},
@@ -68,7 +70,9 @@ export const styleToProps = (item: LazyItemNode, styles: Styles, rootStyles: Sty
         break;
       }
       case 'line-height':
-        props.lineHeight = toUnit(value, rootFontSize);
+        if (value !== 'inherit') { // TODO handle inherit
+          props.lineHeight = toUnit(value, rootFontSize);
+        }
         break;
       case 'letter-spacing':
         props.characterSpacing = toUnit(value);
@@ -107,7 +111,7 @@ export const styleToProps = (item: LazyItemNode, styles: Styles, rootStyles: Sty
         }
         break;
       case 'text-decoration-color':
-        props.decorationColor = value;
+        props.decorationColor = parseColor(value);
         break;
       case 'text-decoration-style':
         props.decorationStyle = value;
@@ -126,11 +130,15 @@ export const styleToProps = (item: LazyItemNode, styles: Styles, rootStyles: Sty
         break;
       case 'font-family': {
         const font = value.split(',').filter(f => !!f).map(f => f.replace(/["']/g, '').trim());
-        props.font = font[0] || 'Roboto';
+        if (ctx.fonts) {
+          props.font = Object.keys(ctx.fonts).find(f => font.includes(f)) || ctx.config.defaultFont;
+        } else {
+          props.font = font[0] || ctx.config.defaultFont;
+        }
         break;
       }
       case 'color':
-        props.color = value;
+        props.color = parseColor(value);
         break;
       case 'background':
       case 'background-color':
@@ -139,12 +147,12 @@ export const styleToProps = (item: LazyItemNode, styles: Styles, rootStyles: Sty
           if (typeof layout === 'string') {
             layout = {};
           }
-          layout.fillColor = () => value;
+          layout.fillColor = () => parseColor(value);
           props.layout = layout;
         } else if (isTdOrTh(item)) {
-          props.fillColor = value;
+          props.fillColor = parseColor(value);
         } else {
-          props.background = ['fill', value];
+          props.background = ['fill', parseColor(value)];
         }
         break;
       case 'margin': {

@@ -26,6 +26,20 @@ describe('Style to props', () => {
       expect(content[0].text[0].text[0].text[0].text).to.equal('Text');
       expect(content[0].text[0].font).to.equal('Roboto');
     });
+
+    it('selects second font family', () => {
+      const template = `<span style="font-family: arial, sans-serif">Text</span>`;
+      const dom = html(template);
+      const {content}: any = parse(dom, {
+        fonts: {
+          'sans-serif': {
+            normal: 'url-to-font'
+          }
+        }
+      });
+      expect(content[0].text[0].text[0].text[0].text).to.equal('Text');
+      expect(content[0].text[0].font).to.equal('sans-serif');
+    });
   });
 
 });

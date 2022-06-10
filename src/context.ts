@@ -25,9 +25,13 @@ export class Context {
   public setPageStyles(styles: CssStyles) {
     this.pageStyles = styles;
   }
+
+  get fonts() {
+    return this.config.fonts;
+  }
 }
 
-export const createContext = (_config: Config = defaultConfig()) => {
+export const createContext = (_config: Partial<Config> = defaultConfig()) => {
   const config = {
     ...defaultConfig(),
     ..._config
