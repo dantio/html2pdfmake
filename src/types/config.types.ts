@@ -1,3 +1,4 @@
+import {TFontDictionary} from 'pdfmake/interfaces.js';
 import {CssStyles, El, Rule} from './global.types.js';
 
 export type Config = {
@@ -13,5 +14,5 @@ export type Config = {
   parseCss: (style: NodeListOf<HTMLStyleElement>) => CssStyles,
 
   defaultFont: string
-  fonts?: Record<string, Record<string, string>>
+  fonts?: TFontDictionary
 }

@@ -4,7 +4,17 @@ import {ComputedProps} from '../types/props.types.js';
 import {isTable, isTdOrTh} from '../utils/type-guards.js';
 import {toUnit} from '../utils/unit.js';
 
-export const computePadding = (props: ComputedProps, item: LazyItem, value: number, index: number) => {
+const paddings: Record<string, number> = {
+  'padding-top': POS_TOP,
+  'padding-left': POS_LEFT,
+  'padding-right': POS_RIGHT,
+  'padding-bottom': POS_BOTTOM
+};
+
+export const computePadding = (item: LazyItem, props: ComputedProps, directive: string, input: string | number) => {
+  const index = typeof paddings[directive] !== 'undefined' ? paddings[directive] : -1;
+  const value = toUnit(input);
+
   if (isTable(item)) {
     props.layout = item.layout || props.layout || {};
     if (typeof props.layout === 'string') {
@@ -12,19 +22,19 @@ export const computePadding = (props: ComputedProps, item: LazyItem, value: numb
     }
     switch (index) {
       case POS_LEFT:
-        props.layout.paddingLeft = () => toUnit(value);
+        props.layout.paddingLeft = () => value;
         break;
       case POS_TOP:
-        props.layout.paddingTop = () => toUnit(value);
+        props.layout.paddingTop = () => value;
         break;
       case POS_RIGHT:
-        props.layout.paddingRight = () => toUnit(value);
+        props.layout.paddingRight = () => value;
         break;
       case POS_BOTTOM:
-        props.layout.paddingBottom = () => toUnit(value);
+        props.layout.paddingBottom = () => value;
         break;
       default:
-        throw new Error('Unsupported index for padding: ' + index);
+        throw new Error('Unsupported index for "' + directive + '": ' + index);
     }
   } else {
     const padding = props[META][PADDING] || item[META]?.[PADDING] || [0, 0, 0, 0];

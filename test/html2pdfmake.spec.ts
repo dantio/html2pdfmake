@@ -100,9 +100,9 @@ describe('Parser', () => {
     });
   });
 
-  describe('Table', () => {
+  describe('Table collapsed', () => {
     it('<table><tr><td><td></tr></table>', () => {
-      const template = '<table><tr><td>#text1</td><td>#text2</td></tr></table>';
+      const template = '<table style="border-collapse: collapse"><tr><td>#text1</td><td>#text2</td></tr></table>';
 
       const {content}: any = parse(html(template));
       const outerTableContent = content[0].table.body[0][0];
@@ -113,7 +113,7 @@ describe('Parser', () => {
 
 
     it('<table><tbody><tr><td></tr></tbody></table>', () => {
-      const template = '<table><tbody><tr><td>#text1</td></tr></tbody></table>';
+      const template = '<table style="border-collapse: collapse"><tbody><tr><td>#text1</td></tr></tbody></table>';
       const {content}: any = parse(html(template));
       const outerTableContent = content[0].table.body[0][0];
 
@@ -121,7 +121,7 @@ describe('Parser', () => {
     });
 
     it('<table><tr><td><p></td></tr></table>', () => {
-      const template = '<table><tr><td><p>#text1</p></td></tr></table>';
+      const template = '<table style="border-collapse: collapse"><tr><td><p>#text1</p></td></tr></table>';
       const {content}: any = parse(html(template));
       const outerTableContent = content[0].table.body[0][0];
       //                                        td       p       wrapper  text

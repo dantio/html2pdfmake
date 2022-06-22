@@ -1,3 +1,4 @@
+import {PredefinedPageSize} from 'pdfmake/interfaces.js';
 import {getPatterns} from './constants.js';
 import {createContext} from './context.js';
 import {defaultConfig} from './default-config.js';
@@ -86,7 +87,7 @@ export const parseTemplate = (template: Element | Document, _config: Partial<Con
     images: ctx.images,
     patterns: getPatterns(),
 
-    pageSize: pageSize?.getAttribute('content') || 'A4',
+    pageSize: pageSize?.getAttribute('content') as PredefinedPageSize || 'A4',
     pageOrientation: pageOrientation?.getAttribute('content') === 'landscape' ? 'landscape' : 'portrait',
     pageMargins: margins,
   };

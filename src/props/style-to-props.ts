@@ -1,10 +1,10 @@
+import {Alignment, DecorationStyle} from 'pdfmake/interfaces.js';
 import {HANDLER, META, NODE, POS_BOTTOM, POS_LEFT, POS_RIGHT, POS_TOP, STYLE} from '../constants.js';
 import {Context} from '../context.js';
 import {handleColumns, handleHeadlineToc, handleImg} from '../handler/index.js';
 import {Styles} from '../types/global.types.js';
-import {Table} from '../types/item.types.js';
 import {LazyItemNode} from '../types/lazy-item.types.js';
-import {ComputedProps} from '../types/props.types.js';
+import {ComputedProps, OpenTypeFeatures} from '../types/props.types.js';
 import {parseColor} from '../utils/color.js';
 import {isHeadline, isImage, isList, isTable, isTdOrTh, isTextSimple} from '../utils/type-guards.js';
 import {expandValueToUnits, toUnit, toUnitOrValue} from '../utils/unit.js';
@@ -15,8 +15,9 @@ import {computePadding} from './padding.js';
 export const styleToProps = (item: LazyItemNode, ctx: Context, styles: Styles, rootStyles: Styles = {}) => {
   const props: ComputedProps = {
     [META]: {
-      [STYLE]: {},
       ...(item[META] || {}),
+      [STYLE]: {},
+      ...(item[META]?.[STYLE] || {}),
     }
   };
 
@@ -48,16 +49,22 @@ export const styleToProps = (item: LazyItemNode, ctx: Context, styles: Styles, r
           layout.paddingLeft = () => Number(paddings[POS_LEFT]);
           layout.paddingRight = () => Number(paddings[POS_RIGHT]);
           layout.paddingTop = (i: number) => (i === 0) ? Number(paddings[POS_TOP]) : 0;
-          layout.paddingBottom = (i: number, node: Table) => (i === node.table.body.length - 1) ? Number(paddings[POS_BOTTOM]) : 0;
+          layout.paddingBottom = (i: number, node) => (i === node.table.body.length - 1) ? Number(paddings[POS_BOTTOM]) : 0;
           props.layout = layout;
         } else if (paddings !== null) {
-          computePadding(props, item, Number(paddings[POS_TOP]), POS_TOP);
-          computePadding(props, item, Number(paddings[POS_LEFT]), POS_LEFT);
-          computePadding(props, item, Number(paddings[POS_RIGHT]), POS_RIGHT);
-          computePadding(props, item, Number(paddings[POS_BOTTOM]), POS_BOTTOM);
+          computePadding(item, props, 'padding-top', Number(paddings[POS_TOP]));
+          computePadding(item, props, 'padding-left', Number(paddings[POS_LEFT]));
+          computePadding(item, props, 'padding-right', Number(paddings[POS_RIGHT]));
+          computePadding(item, props, 'padding-bottom', Number(paddings[POS_BOTTOM]));
         }
         break;
       }
+      case 'padding-left':
+      case 'padding-top':
+      case 'padding-right':
+      case 'padding-bottom':
+        computePadding(item, props, directive, value);
+        break;
       case 'border':
       case 'border-bottom':
       case 'border-top':
@@ -78,10 +85,12 @@ export const styleToProps = (item: LazyItemNode, ctx: Context, styles: Styles, r
         props.characterSpacing = toUnit(value);
         break;
       case 'text-align':
-        props.alignment = value;
+        if (['left', 'right', 'justify', 'center'].includes(value)) {
+          props.alignment = value as Alignment;
+        }
         break;
       case 'font-feature-settings': {
-        const settings = value.split(',').filter(s => s).map(s => s.replace(/['"]/g, ''));
+        const settings = value.split(',').filter(s => s).map(s => s.replace(/['"]/g, '')) as OpenTypeFeatures;
         const fontFeatures = item.fontFeatures || props.fontFeatures || [];
         fontFeatures.push(...settings);
         props.fontFeatures = fontFeatures;
@@ -114,7 +123,9 @@ export const styleToProps = (item: LazyItemNode, ctx: Context, styles: Styles, r
         props.decorationColor = parseColor(value);
         break;
       case 'text-decoration-style':
-        props.decorationStyle = value;
+        if (['dashed', 'dotted', 'double', 'wavy'].includes(value)) {
+          props.decorationStyle = value as DecorationStyle;
+        }
         break;
       case 'vertical-align':
         if (value === 'sub') {
@@ -177,18 +188,6 @@ export const styleToProps = (item: LazyItemNode, ctx: Context, styles: Styles, r
       case 'margin-bottom':
         computeMargin(props, item, toUnit(value), POS_BOTTOM);
         break;
-      case 'padding-left':
-        computePadding(props, item, toUnit(value), POS_LEFT);
-        break;
-      case 'padding-top':
-        computePadding(props, item, toUnit(value), POS_TOP);
-        break;
-      case 'padding-right':
-        computePadding(props, item, toUnit(value), POS_RIGHT);
-        break;
-      case 'padding-bottom':
-        computePadding(props, item, toUnit(value), POS_BOTTOM);
-        break;
       case 'page-break-before':
         if (value === 'always') {
           props.pageBreak = 'before';
@@ -199,43 +198,29 @@ export const styleToProps = (item: LazyItemNode, ctx: Context, styles: Styles, r
           props.pageBreak = 'after';
         }
         break;
-      case 'position':
-        if (value === 'absolute') {
-          props.absolutePosition = {};
-        } else if (value === 'relative') {
-          props.relativePosition = {};
-        }
-        break;
-      case 'left':
-      case 'top':
-        // TODO can be set before postion:absolute!
-        if (!props.absolutePosition && !props.relativePosition) {
-          console.error(directive + ' is set, but no absolute/relative position.');
-          break;
-        }
+      case 'position': {
+        const x = toUnit(styles['left'] || 0);
+        const y = toUnit(styles['top'] || 0);
 
-        if (props.absolutePosition) {
-          if (directive === 'left') {
-            props.absolutePosition.x = toUnit(value);
-          } else if (directive === 'top') {
-            props.absolutePosition.y = toUnit(value);
-          }
-        } else if (props.relativePosition) {
-          if (directive === 'left') {
-            props.relativePosition.x = toUnit(value);
-          } else if (directive === 'top') {
-            props.relativePosition.y = toUnit(value);
-          }
-        } else {
-          console.error(directive + ' is set, but no absolute/relative position.');
-          break;
+        if (value === 'absolute') {
+          props.absolutePosition = {
+            x,
+            y
+          };
+        } else if (value === 'relative') {
+          props.relativePosition = {
+            x,
+            y
+          };
         }
         break;
+      }
       case 'white-space':
         if (value === 'pre' && meta[NODE]) {
           if (text) {
             props.text = meta[NODE]?.textContent || '';
           }
+
 
           props.preserveLeadingSpaces = true;
         }
@@ -264,15 +249,10 @@ export const styleToProps = (item: LazyItemNode, ctx: Context, styles: Styles, r
         break;
       case 'width':
         if (table) {
-          if (value === '100%') {
-            item.table.widths = ['*'];
-          } else {
-            const width = toUnitOrValue(value);
-            if (width !== null) {
-              item.table.widths = [width];
-            }
+          const width = toUnitOrValue(value);
+          if (width !== null) {
+            item.table.widths = [width];
           }
-
         } else if (image) {
           props.width = toUnit(value);
         }

@@ -6,4 +6,3 @@ export type Rule = (el: El, ctx: Context) => LazyItem | null
 
 export type Styles = Record<string, string>;
 export type CssStyles = Record<string, Styles>;
-

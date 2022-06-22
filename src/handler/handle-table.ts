@@ -1,8 +1,22 @@
-import {ITEMS, META, PADDING, POS_BOTTOM, POS_LEFT, POS_RIGHT, POS_TOP, STYLE} from '../constants.js';
+import {TableLayout} from 'pdfmake/interfaces.js';
+import {BORDER, META, NODE, PADDING, POS_BOTTOM, POS_LEFT, POS_RIGHT, POS_TOP, STYLE} from '../constants.js';
 import {Item, Table} from '../types/item.types.js';
-import {TableLayout} from '../types/table.types.js';
+import {Points} from '../types/props.types.js';
 import {isTable} from '../utils/type-guards.js';
-import {getUnitOrValue} from '../utils/unit.js';
+
+const computeMaxValue = (topBottom: Array<[number, number]>, leftRight: Array<[number, number]>, trIndex: number, tdIndex: number, points?: Points) => {
+  topBottom[trIndex] = topBottom[trIndex] || [0, 0];
+  leftRight[tdIndex] = leftRight[tdIndex] || [0, 0];
+
+  topBottom[trIndex] = [
+    Math.max(topBottom[trIndex][0], points?.[POS_TOP] || 0),
+    Math.max(topBottom[trIndex][1], points?.[POS_BOTTOM] || 0)
+  ];
+  leftRight[tdIndex] = [
+    Math.max(leftRight[tdIndex][0], points?.[POS_LEFT] || 0),
+    Math.max(leftRight[tdIndex][1], points?.[POS_RIGHT] || 0)
+  ];
+};
 
 export const handleTable = (item: Item) => {
   if (isTable(item)) {
@@ -13,95 +27,117 @@ export const handleTable = (item: Item) => {
       return item;
     }
 
+    const collapseBorder = item?.[META]?.[STYLE]?.['border-collapse'] === 'collapse';
+
     const innerTable = tableItem.table;
 
-    const colgroup = bodyItem[META]?.[ITEMS]?.colgroup;
-    if (colgroup && Array.isArray(colgroup)) {
-      innerTable.widths = innerTable.widths || [];
-      colgroup.forEach((col, i: number) => {
-        if (col[META]?.[STYLE]?.width && innerTable.widths) {
-          innerTable.widths[i] = getUnitOrValue(col[META]?.[STYLE]?.width || 'auto');
-        }
-      });
-    }
+    type IndexTuple = Array<[number, number]>;
 
-    const trs = bodyItem[META]?.[ITEMS]?.trs;
-
-    if (Array.isArray(trs)) {
-      trs.forEach((tr, i: number) => {
-        if (tr[META]?.[STYLE]?.height && innerTable.heights) {
-          innerTable.heights[i] = getUnitOrValue(tr[META]?.[STYLE]?.height || 'auto');
-        }
-      });
-    }
-
-    const paddingsTopBottom: Record<number, [number, number]> = {};
-    const paddingsLeftRight: Record<number, [number, number]> = {};
+    const paddingsLeftRight: IndexTuple = [];
+    const paddingsTopBottom: IndexTuple = [];
+    const borderTopBottom: IndexTuple = [];
+    const borderLeftRight: IndexTuple = [];
 
     innerTable.body
       .forEach((row, trIndex: number) => {
         row.forEach((column, tdIndex: number) => {
+          if (column[META]?.[PADDING]) {
+            computeMaxValue(paddingsTopBottom, paddingsLeftRight, trIndex, tdIndex, column[META]?.[PADDING]);
+          }
+
+          if (column[META]?.[BORDER]) {
+            computeMaxValue(borderTopBottom, borderLeftRight, trIndex, tdIndex, column[META]?.[BORDER]);
+          }
+
           if (typeof column !== 'string') {
-            if (column[META]?.[PADDING]) {
-              paddingsTopBottom[trIndex] = paddingsTopBottom[trIndex] || [0, 0];
-              paddingsLeftRight[tdIndex] = paddingsLeftRight[tdIndex] || [0, 0];
-              paddingsTopBottom[trIndex] = [
-                Math.max(paddingsTopBottom[trIndex][0], column[META]?.[PADDING]?.[POS_TOP] || 0),
-                Math.max(paddingsTopBottom[trIndex][1], column[META]?.[PADDING]?.[POS_BOTTOM] || 0)
-              ];
-              paddingsLeftRight[tdIndex] = [
-                Math.max(paddingsLeftRight[tdIndex][0], column[META]?.[PADDING]?.[POS_LEFT] || 0),
-                Math.max(paddingsLeftRight[tdIndex][1], column[META]?.[PADDING]?.[POS_RIGHT] || 0)
-              ];
-            }
             column.style = column.style || [];
-            column.style.push(tdIndex % 2 === 0 ? 'td:nth-child(even)' : 'td:nth-child(odd)');
+            const nodeName = column[META]?.[NODE]?.nodeName === 'TH' ? 'th' : 'td';
+            column.style.push(tdIndex % 2 === 0 ? nodeName + ':nth-child(even)' : nodeName + ':nth-child(odd)');
             column.style.push(trIndex % 2 === 0 ? 'tr:nth-child(even)' : 'tr:nth-child(odd)');
           }
         });
       });
 
-    const tableLayout: TableLayout = {};
-    const hasPaddingTopBottom = Object.keys(paddingsTopBottom).length > 0;
-    const hasPaddingLeftRight = Object.keys(paddingsLeftRight).length > 0;
+    // Padding fix
+    innerTable.body
+      .forEach((row, trIndex: number) => {
+        row.forEach((column, tdIndex: number) => {
+          if (!column[META]?.[PADDING]?.[POS_LEFT] && typeof column !== 'string' && paddingsLeftRight[tdIndex]) {
+            column.margin = column.margin || [0, 0, 0, 0];
+            if (column.margin) {
+              column.margin[POS_LEFT] = column.margin[POS_LEFT] - paddingsLeftRight[tdIndex][0];
+            }
+          }
 
-    if (hasPaddingTopBottom) {
-      tableLayout.paddingTop = (i) => {
-        if (paddingsTopBottom[i]) {
-          return paddingsTopBottom[i][0];
+          if (!column[META]?.[PADDING]?.[POS_TOP] && typeof column !== 'string' && paddingsTopBottom[trIndex]) {
+            column.margin = column.margin || [0, 0, 0, 0];
+            if (column.margin) {
+              column.margin[POS_TOP] = column.margin[POS_TOP] - paddingsTopBottom[trIndex][0];
+            }
+          }
+        });
+      });
+
+
+    const tableLayout: TableLayout = {
+      defaultBorder: false
+    };
+
+    const defaultPadding = 0.75;
+
+    if (paddingsTopBottom.length) {
+      tableLayout.paddingTop = (i) => paddingsTopBottom[i]?.[0] ?? defaultPadding;
+      tableLayout.paddingBottom = (i) => paddingsTopBottom[i]?.[1] ?? defaultPadding;
+    }
+
+    if (paddingsLeftRight.length) {
+      tableLayout.paddingLeft = (i,) => paddingsLeftRight[i]?.[0] ?? defaultPadding;
+      tableLayout.paddingRight = (i) => paddingsLeftRight[i]?.[1] ?? defaultPadding;
+    }
+
+    if (borderTopBottom.length) {
+      tableLayout.hLineWidth = (i) => {
+        const even = i % 2 === 0;
+        if (collapseBorder) {
+          return borderTopBottom[i]?.[0] ?? borderTopBottom[i - 1]?.[1] ?? 0;
         }
 
-        return 0;
-      };
-
-      tableLayout.paddingBottom = (i) => {
-        if (paddingsTopBottom[i]) {
-          return paddingsTopBottom[i][1];
+        if (i === 0) {
+          return 0;
         }
 
-        return 0;
+        const index = even ? i - 1 : i;
+        return borderTopBottom[index]?.[even ? 1 : 0] ?? 0;
       };
     }
 
-    if (hasPaddingLeftRight) {
-      tableLayout.paddingRight = (i) => {
-        if (paddingsLeftRight[i]) {
-          return paddingsLeftRight[i][1];
+    if (borderLeftRight.length) {
+      tableLayout.vLineWidth = (i) => {
+        const even = i % 2 === 0;
+
+        if (collapseBorder) {
+          return borderLeftRight[i]?.[0] ?? borderLeftRight[i - 1]?.[1] ?? 0;
         }
 
-        return 0;
-      };
-      tableLayout.paddingLeft = (i,) => {
-        if (paddingsLeftRight[i]) {
-          return paddingsLeftRight[i][0];
+        if (i === 0) {
+          return 0;
         }
 
-        return 0;
+        const index = even ? i - 1 : i;
+        return borderLeftRight[index]?.[even ? 1 : 0] ?? 0;
       };
     }
 
-    if (hasPaddingLeftRight || hasPaddingTopBottom) {
-      tableItem.layout = tableLayout;
+    tableItem.layout = tableLayout;
+
+    if (collapseBorder) {
+      item.layout = {
+        ...(typeof item.layout !== 'string' ? item.layout : {}),
+        paddingLeft: () => 0,
+        paddingRight: () => 0,
+        paddingTop: () => 0,
+        paddingBottom: () => 0
+      };
     }
   }
 

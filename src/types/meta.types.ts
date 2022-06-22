@@ -1,10 +1,10 @@
 import {
+  BORDER,
   END_WITH_NEWLINE,
   END_WITH_WHITESPACE,
   HANDLER,
   IS_NEWLINE,
   IS_WHITESPACE,
-  ITEMS,
   MARGIN,
   NODE,
   PADDING,
@@ -16,7 +16,7 @@ import {
 } from '../constants.js';
 import {El, Styles} from './global.types.js';
 import {Item} from './item.types.js';
-import {Margin} from './props.types.js';
+import {Points} from './props.types.js';
 
 export type Meta = {
   [IS_WHITESPACE]?: string | boolean
@@ -27,9 +27,9 @@ export type Meta = {
   [END_WITH_WHITESPACE]?: boolean
   [NODE]?: El
   [UID]?: string
-  [MARGIN]?: Margin
-  [PADDING]?: Margin
-  [ITEMS]?: Record<string, Item | Item[]>
+  [MARGIN]?: Points
+  [PADDING]?: Points
+  [BORDER]?: Points
   [HANDLER]?: (item: Item) => Item | null
   [STYLE]?: Styles
   [PDFMAKE]?: Record<string, unknown>

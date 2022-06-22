@@ -13,7 +13,7 @@ import {
 import {Context} from '../context.js';
 import {handleItem} from '../handler/index.js';
 import {computeProps} from '../props/index.js';
-import {El, Styles} from '../types/global.types.js';
+import {El} from '../types/global.types.js';
 import {Item, TextArray} from '../types/item.types.js';
 import {LazyItem} from '../types/lazy-item.types.js';
 import {collapseMargin, collapseWhitespace} from '../utils/collapse.js';
@@ -30,12 +30,12 @@ const parseAsHTMLCollection = (el: El): el is Element => ['TABLE', 'TBODY', 'TR'
 export const stackRegex = /^(address|blockquote|body|center|colgroup|dir|div|dl|fieldset|form|h[1-6]|hr|isindex|menu|noframes|noscript|ol|p|pre|table|ul|dd|dt|frameset|li|tbody|td|tfoot|th|thead|tr|html)$/i;
 export const isStackItem = (el: El) => stackRegex.test(el.nodeName);
 
-export const parseChildren = (el: El, ctx: Context, parentStyles = {}): Item[] => {
+export const parseChildren = (el: El, ctx: Context, parentItem?: LazyItem): Item[] => {
   const items: Item[] = [];
   const children = parseAsHTMLCollection(el) ? el.children : el.childNodes;
 
   for (let i = 0; i < children.length; i++) {
-    const item = parseByRule(children[i], ctx, parentStyles);
+    const item = parseByRule(children[i], ctx, parentItem);
     if (item === null) {
       continue;
     }
@@ -259,40 +259,40 @@ const getItemByRule = (el: El, ctx: Context): LazyItem | null => {
   throw new Error('Unsupported Node Type: ' + (el as El).nodeType);
 };
 
-const parseLazyChildren = (item: LazyItem, el: El, ctx: Context, cssStyles: Styles) => {
+const parseLazyChildren = (item: LazyItem, el: El, ctx: Context) => {
   if ('stack' in item && typeof item.stack === 'function') {
-    const children = parseChildren(el, ctx, cssStyles);
-    item.stack = item.stack(children, ctx);
+    const children = parseChildren(el, ctx, item);
+    item.stack = item.stack(children, ctx, item);
   } else if ('text' in item && typeof item.text === 'function') {
-    const children = parseChildren(el, ctx, cssStyles);
-    item.text = item.text(children.filter(isTextOrLeaf), ctx);
+    const children = parseChildren(el, ctx, item);
+    item.text = item.text(children.filter(isTextOrLeaf), ctx, item);
   } else if ('ul' in item && typeof item.ul === 'function') {
-    const children = parseChildren(el, ctx, cssStyles);
-    item.ul = item.ul(children, ctx);
+    const children = parseChildren(el, ctx, item);
+    item.ul = item.ul(children, ctx, item);
   } else if ('ol' in item && typeof item.ol === 'function') {
-    const children = parseChildren(el, ctx, cssStyles);
-    item.ol = item.ol(children, ctx);
+    const children = parseChildren(el, ctx, item);
+    item.ol = item.ol(children, ctx, item);
   } else if ('table' in item && typeof item.table.body === 'function') {
-    const children = parseChildren(el, ctx, cssStyles);
-    item.table.body = item.table.body(children, ctx);
+    const children = parseChildren(el, ctx, item);
+    item.table.body = item.table.body(children, ctx, item);
   }
 };
 
-export const processItems = (item: LazyItem, ctx: Context, parentStyles: Styles = {}): Item | null => {
+export const processItems = (item: LazyItem, ctx: Context, parentItem?: LazyItem): Item | null => {
   const el = item[META]?.[NODE];
 
   if (typeof item !== 'string' && el) {
-    const {cssStyles, props} = computeProps(el, item, ctx, parentStyles);
+    const props = computeProps(el, item, ctx, parentItem);
 
     Object.assign(item, props);
 
-    parseLazyChildren(item, el, ctx, cssStyles);
+    parseLazyChildren(item, el, ctx);
   }
 
   return handleItem(item as Item);
 };
 
-export const parseByRule = (el: El, ctx: Context, parentStyles = {}): Item | null => {
+export const parseByRule = (el: El, ctx: Context, parentItem?: LazyItem): Item | null => {
   const item = getItemByRule(el, ctx);
   if (item === null) {
     return null;
@@ -303,7 +303,7 @@ export const parseByRule = (el: El, ctx: Context, parentStyles = {}): Item | nul
   meta[NODE] = el;
   item[META] = meta;
 
-  return processItems(item, ctx, parentStyles);
+  return processItems(item, ctx, parentItem);
 };
 
 export const parseElement = (el: Element): LazyItem | null => {

@@ -1,0 +1,120 @@
+<template>
+    <title>Template</title>
+    <meta name="author" content="Author">
+    <meta name="page-size" content="A4">
+    <meta name="page-margins" content="40, 60, 40, 60">
+
+    <style>
+        .right {
+            text-align: right;
+        }
+    </style>
+
+    <header>
+        <p>Header Page1</p>
+    </header>
+    <header data-page="default">
+        <p>Default Header</p>
+    </header>
+    <header>
+        <p class="violet">Violet Header Page2</p>
+    </header>
+
+    <main>
+        <h1>Rechnung</h1>
+        <table style="border: 10px solid black; margin-bottom: 30px; padding: 10px; border-collapse: collapse; width: 60%">
+            <tr>
+                <td>Rechnung</td>
+                <td>2022</td>
+            </tr>
+            <tr>
+                <td>Rechnungsdatum</td>
+                <td>10.06.2022</td>
+            </tr>^
+            <tr>
+                <td>Bestelldatum</td>
+                <td>10.06.2022</td>
+            </tr>
+            <tr>
+                <td>Zahldatum</td>
+                <td>10.06.2022</td>
+            </tr>
+            <tr>
+                <td>Versanddatum</td>
+                <td>10.06.2022</td>
+            </tr>
+            <tr>
+                <td>Zahlart</td>
+                <td>PayPal</td>
+            </tr>
+            <tr>
+                <td>Referenz</td>
+                <td><b>PayPal</b></td>
+            </tr>
+        </table>
+
+        <table style="border: 1px solid green; border-collapse: collapse; padding: 20px">
+            <tr style="background: #ccc">
+                <th>Collapse</th>
+                <th>Nummer</th>
+                <th>Artikel</th>
+                <th class="right">Anzahl</th>
+                <th class="right">Preis</th>
+                <th class="right">Summe</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>B1</td>
+                <td>Super Artikel</td>
+                <td class="right">2</td>
+                <td class="right">2,83 €</td>
+                <td class="right">5,66 €</td>
+            </tr>
+        </table>
+
+        <table style="border: 1px solid black; width: 90%">
+            <colgroup>
+                <col>
+                <col style="width: 200px; background: #00dc3c">
+            </colgroup>
+            <tr style="background: #ccc; ">
+                <th style="border-right: 6px solid red; border-bottom: 5px solid blue">Pos</th>
+                <th>Nummer Test</th>
+                <th style="width: 200px">Artikel</th>m
+                <th class="right" style="border-right: 2px solid red; border-bottom: 3px solid blue">Anzahl</th>
+                <th class="right">Preis</th>
+                <th class="right">Summe</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>B1</td>
+                <td style="background: #0074D9">Super Artikel</td>
+                <td class="right">2</td>
+                <td class="right">2,83 €</td>
+                <td class="right">5,66 €</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>B1</td>
+                <td style="background: #0074D9">Super Artikel</td>
+                <td class="right">2</td>
+                <td class="right">2,83 €</td>
+                <td class="right">5,66 €</td>
+            </tr>
+        </table>
+
+        <p>Ihre Zahlung haben wir am 10.06.2022 per PayPal erhalten. Vielen Dank!</p>
+    </main>
+
+    <footer data-page="odd">
+        <p style="text-align: right; padding-right: 30px">Seite: <span data-value="currentPage"></span>/<b
+                data-value="pageCount"></b>
+        </p>
+    </footer>
+    <footer data-page="2">
+        <p style="padding: 0 40px">Footer Page 2</p>
+    </footer>
+    <footer data-page="default">
+        <p>Default Footer Page 2</p>
+    </footer>
+</template>

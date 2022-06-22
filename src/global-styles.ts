@@ -83,17 +83,12 @@ export const globalStyles = () => ({
   },
   table: {
     border: 'none',
-    padding: '3px'
-  },
-  td: {
-    border: 'none'
   },
   tr: {
-    margin: '4px 0'
+  /*  margin: '4px 0'*/
   },
   th: {
     'font-weight': 'bold',
-    border: 'none',
     'text-align': 'center'
   },
   a: {

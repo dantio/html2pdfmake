@@ -1,6 +1,17 @@
+import {META, NODE, STYLE} from '../constants.js';
 import {El, Styles} from '../types/global.types.js';
+import {LazyItem} from '../types/lazy-item.types.js';
 
-export const inheritStyle = (styles: Styles, el: El): Styles => {
+export const inheritStyle = (el: El, parentItem?: LazyItem): Styles => {
+  if (!parentItem) {
+    return {};
+  }
+
+  const styles = parentItem[META]?.[STYLE] || {};
+
+  // TR does not really exist
+  const isTr = parentItem?.[META]?.[NODE]?.nodeName === 'TR';
+
   // TODO what do we want to exclude ?
   const pick: Record<string, boolean> = {
     color: el.nodeName !== 'A',
@@ -13,10 +24,9 @@ export const inheritStyle = (styles: Styles, el: El): Styles => {
     'list-style': true,
     'text-align': true,
 
-    // TODO only if parent is text: []
-    background: true,
+    background: isTr,
+    'background-color': isTr,
     'font-style': true,
-    'background-color': true,
     'font-feature-settings': true,
     'white-space': true,
     'vertical-align': true,
