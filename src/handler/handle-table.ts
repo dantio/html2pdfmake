@@ -1,6 +1,7 @@
 import {TableLayout} from 'pdfmake/interfaces.js';
 import {BORDER, META, NODE, PADDING, POS_BOTTOM, POS_LEFT, POS_RIGHT, POS_TOP, STYLE} from '../constants.js';
 import {Item, Table} from '../types/item.types.js';
+import {MetaNode} from '../types/meta.types.js';
 import {Points} from '../types/props.types.js';
 import {isTable} from '../utils/type-guards.js';
 
@@ -18,7 +19,7 @@ const computeMaxValue = (topBottom: Array<[number, number]>, leftRight: Array<[n
   ];
 };
 
-export const handleTable = (item: Item) => {
+export const handleTable = (item: MetaNode<Item>) => {
   if (isTable(item)) {
     const bodyItem = item.table.body[0]?.[0];
     const tableItem: Table | null = bodyItem && typeof bodyItem !== 'string' && 'table' in bodyItem ? bodyItem : null;

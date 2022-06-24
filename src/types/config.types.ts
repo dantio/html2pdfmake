@@ -1,10 +1,12 @@
 import {TFontDictionary} from 'pdfmake/interfaces.js';
-import {CssStyles, El, Rule} from './global.types.js';
+import {CssStyles, El, NodeRule, StyleRule} from './global.types.js';
 
 export type Config = {
   globalStyles?: CssStyles
   styles: CssStyles
-  customRule?: Rule
+
+  nodeRule?: NodeRule
+  styleRule?: StyleRule
 
   collapseMargin: boolean
   collapseWhitespace: boolean

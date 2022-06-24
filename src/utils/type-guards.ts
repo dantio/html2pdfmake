@@ -23,7 +23,6 @@ export const isTextSimple = (item: LazyItem): item is Text => typeof item !== 's
 export const isTextOrLeaf = (item: LazyItem): item is (Leaf | Text) => 'text' in item || typeof item === 'string';
 export const isList = (item: LazyItem): item is Ul | Ol => 'ul' in item || 'ol' in item;
 export const isTdOrTh = (item: LazyItem) => item[META]?.[NODE] && (item[META]?.[NODE]?.nodeName === 'TD' || item[META]?.[NODE]?.nodeName === 'TH' || item[META]?.[NODE]?.nodeName === 'COL');
-export const isHeadline = (item: LazyItem) => item[META]?.[NODE] && (['H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(item[META]?.[NODE]?.nodeName || ''));
 
 export const isElement = (el: El): el is Element => el.nodeType === 1;
 export const isNode = (el: El): el is Node => el.nodeType === 3 || el.nodeType === 8;

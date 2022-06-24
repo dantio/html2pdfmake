@@ -1,7 +1,8 @@
-import {HANDLER, META, NODE, PDFMAKE, STYLE} from '../constants.js';
+import {POST_HANDLER, META, NODE, PDFMAKE, STYLE} from '../constants.js';
 import {addTocItem} from '../handler/index.js';
 import {Item} from '../types/item.types.js';
 import {LazyItemNode} from '../types/lazy-item.types.js';
+import {MetaNode} from '../types/meta.types.js';
 import {ComputedProps} from '../types/props.types.js';
 import {getUniqueId} from '../utils/unique-id.js';
 import {toUnit} from '../utils/unit.js';
@@ -97,7 +98,7 @@ export const attrToProps = (item: LazyItemNode): ComputedProps => {
               console.warn('Not valid JSON format.', value);
             }
           }
-          props[META][HANDLER] = (item: Item) => {
+          props[META][POST_HANDLER] = (item: MetaNode<Item>) => {
             addTocItem(item, toc);
 
             return item;

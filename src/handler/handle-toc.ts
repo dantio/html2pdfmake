@@ -1,5 +1,6 @@
 import {META, NODE} from '../constants.js';
 import {Item, Leaf, Text} from '../types/item.types.js';
+import {MetaNode} from '../types/meta.types.js';
 import {merge} from '../utils/merge.js';
 
 export const addTocItem = (item: Item, tocStyle = {}) => {
@@ -15,7 +16,7 @@ export const addTocItem = (item: Item, tocStyle = {}) => {
   }
 };
 
-export const handleHeadlineToc = (item: Item) => {
+export const handleHeadlineToc = (item: MetaNode<Item>) => {
   const tocStyle = {};
 
   if (item[META]?.[NODE]?.nodeName === 'H1') {

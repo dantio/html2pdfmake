@@ -8,13 +8,12 @@ export const START_WITH_WHITESPACE = 'START_WITH_WHITESPACE';
 export const END_WITH_WHITESPACE = 'END_WITH_WHITESPACE';
 export const IS_WHITESPACE = 'IS_WHITESPACE';
 export const IS_INPUT = 'IS_INPUT';
-export const IS_COLUMN = 'IS_COLUMN';
 export const MARGIN = 'MARGIN';
 export const PADDING = 'PADDING';
 export const BORDER = 'BORDER';
-export const HANDLER = 'HANDLER';
+export const POST_HANDLER = 'POST_HANDLER';
+export const PRE_HANDLER = 'PRE_HANDLER';
 export const PDFMAKE = 'PDFMAKE';
-export const ITEMS = 'ITEMS'; // meta items
 export const STYLE = 'STYLE';
 
 export const POS_TOP = 1; // CSS 0

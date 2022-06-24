@@ -1,5 +1,5 @@
 import {Size} from 'pdfmake/interfaces.js';
-import {BORDER, HANDLER, META, PADDING, STYLE} from '../constants.js';
+import {BORDER, POST_HANDLER, META, PADDING, STYLE} from '../constants.js';
 import {handleTable} from '../handler/index.js';
 import {Item, ItemNode, Text} from '../types/item.types.js';
 import {LazyTable} from '../types/lazy-item.types.js';
@@ -207,7 +207,7 @@ export const parseTable = (): LazyTable | null => {
     layout: tableLayoutReset(true),
 
     [META]: {
-      [HANDLER]: handleTable,
+      [POST_HANDLER]: handleTable,
     },
   };
 };

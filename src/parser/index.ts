@@ -5,17 +5,18 @@ import {
   IS_NEWLINE,
   IS_WHITESPACE,
   META,
-  NODE,
+  NODE, POST_HANDLER,
   START_WITH_NEWLINE,
   START_WITH_WHITESPACE,
   STYLE
 } from '../constants.js';
 import {Context} from '../context.js';
-import {handleItem} from '../handler/index.js';
+import {handleHeadlineToc, postHandleItem, preHandleLazyItem} from '../handler/index.js';
 import {computeProps} from '../props/index.js';
 import {El} from '../types/global.types.js';
 import {Item, TextArray} from '../types/item.types.js';
 import {LazyItem} from '../types/lazy-item.types.js';
+import {MetaNode} from '../types/meta.types.js';
 import {collapseMargin, collapseWhitespace} from '../utils/collapse.js';
 import {isElement, isNode, isTextArray, isTextOrLeaf} from '../utils/type-guards.js';
 import {toUnit} from '../utils/unit.js';
@@ -145,6 +146,24 @@ export const getElementRule = (el: Element): (el: Element, ctx: Context) => Lazy
       return () => ({
         text: '\n'
       });
+    case 'h1':
+    case 'h2':
+    case 'h3':
+    case 'h4':
+    case 'h5':
+    case 'h6':
+      return (el) => {
+        const headline = parseElement(el);
+        if (headline === null) {
+          return null;
+        }
+
+        const meta = headline[META] || {};
+        meta[POST_HANDLER] = handleHeadlineToc;
+        headline[META] = meta;
+
+        return headline;
+      };
     case 'qr-code': // CUSTOM
       return (el) => {
         const content = el.getAttribute('value');
@@ -241,8 +260,8 @@ export const getElementRule = (el: Element): (el: Element, ctx: Context) => Lazy
 };
 
 const getItemByRule = (el: El, ctx: Context): LazyItem | null => {
-  if (typeof ctx.config.customRule === 'function') {
-    const result = ctx.config.customRule(el, ctx);
+  if (typeof ctx.config.nodeRule === 'function') {
+    const result = ctx.config.nodeRule(el, ctx);
     if (result === null) {
       return null;
     } else if (result !== undefined) {
@@ -259,7 +278,9 @@ const getItemByRule = (el: El, ctx: Context): LazyItem | null => {
   throw new Error('Unsupported Node Type: ' + (el as El).nodeType);
 };
 
-const parseLazyChildren = (item: LazyItem, el: El, ctx: Context) => {
+const parseLazyChildren = (item: MetaNode<LazyItem>, ctx: Context) => {
+  const el = item[META][NODE];
+
   if ('stack' in item && typeof item.stack === 'function') {
     const children = parseChildren(el, ctx, item);
     item.stack = item.stack(children, ctx, item);
@@ -278,21 +299,24 @@ const parseLazyChildren = (item: LazyItem, el: El, ctx: Context) => {
   }
 };
 
-export const processItems = (item: LazyItem, ctx: Context, parentItem?: LazyItem): Item | null => {
-  const el = item[META]?.[NODE];
+export const processItems = (lazyItem: MetaNode<LazyItem>, ctx: Context, parentItem?: LazyItem): MetaNode<Item> | null => {
+  const item = preHandleLazyItem(lazyItem);
+  if (item === null) {
+    return null;
+  }
 
-  if (typeof item !== 'string' && el) {
-    const props = computeProps(el, item, ctx, parentItem);
+  if (typeof item !== 'string') {
+    const props = computeProps(item, ctx, parentItem);
 
     Object.assign(item, props);
 
-    parseLazyChildren(item, el, ctx);
+    parseLazyChildren(item, ctx);
   }
 
-  return handleItem(item as Item);
+  return postHandleItem(item as MetaNode<Item>);
 };
 
-export const parseByRule = (el: El, ctx: Context, parentItem?: LazyItem): Item | null => {
+export const parseByRule = (el: El, ctx: Context, parentItem?: LazyItem): MetaNode<Item> | null => {
   const item = getItemByRule(el, ctx);
   if (item === null) {
     return null;
@@ -303,7 +327,7 @@ export const parseByRule = (el: El, ctx: Context, parentItem?: LazyItem): Item |
   meta[NODE] = el;
   item[META] = meta;
 
-  return processItems(item, ctx, parentItem);
+  return processItems(item as MetaNode<LazyItem>, ctx, parentItem);
 };
 
 export const parseElement = (el: Element): LazyItem | null => {

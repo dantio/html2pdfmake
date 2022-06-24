@@ -1,12 +1,12 @@
 import {Alignment, DecorationStyle} from 'pdfmake/interfaces.js';
-import {HANDLER, META, NODE, POS_BOTTOM, POS_LEFT, POS_RIGHT, POS_TOP, STYLE} from '../constants.js';
+import {META, NODE, POS_BOTTOM, POS_LEFT, POS_RIGHT, POS_TOP, POST_HANDLER, PRE_HANDLER, STYLE} from '../constants.js';
 import {Context} from '../context.js';
-import {handleColumns, handleHeadlineToc, handleImg} from '../handler/index.js';
+import {handleColumns, handleImg} from '../handler/index.js';
 import {Styles} from '../types/global.types.js';
 import {LazyItemNode} from '../types/lazy-item.types.js';
 import {ComputedProps, OpenTypeFeatures} from '../types/props.types.js';
 import {parseColor} from '../utils/color.js';
-import {isHeadline, isImage, isList, isTable, isTdOrTh, isTextSimple} from '../utils/type-guards.js';
+import {isImage, isList, isTable, isTdOrTh, isTextSimple} from '../utils/type-guards.js';
 import {expandValueToUnits, toUnit, toUnitOrValue} from '../utils/unit.js';
 import {computeBorder} from './border.js';
 import {computeMargin} from './margin.js';
@@ -28,15 +28,15 @@ export const styleToProps = (item: LazyItemNode, ctx: Context, styles: Styles, r
   const list = isList(item);
   const rootFontSize = toUnit(rootStyles['font-size'] || '16px');
 
-  if (isHeadline(item)) {
-    meta[HANDLER] = handleHeadlineToc;
-  }
-
   Object.keys(styles).forEach((key: string) => {
     const directive = key;
     const value = ('' + styles[key]).trim();
 
     props[META][STYLE][directive] = value;
+
+    if (typeof ctx.config.styleRule === 'function' && ctx.config.styleRule(directive, value, props)) {
+      return;
+    }
 
     switch (directive) {
       case 'padding': {
@@ -228,9 +228,9 @@ export const styleToProps = (item: LazyItemNode, ctx: Context, styles: Styles, r
 
       case 'display':
         if (value === 'flex') {
-          props[META][HANDLER] = handleColumns;
+          props[META][POST_HANDLER] = handleColumns;
         } else if (value === 'none') {
-          props[META][HANDLER] = () => null;
+          props[META][PRE_HANDLER] = () => null;
         }
         break;
       case 'opacity':
@@ -284,7 +284,7 @@ export const styleToProps = (item: LazyItemNode, ctx: Context, styles: Styles, r
         break;
       case 'object-fit':
         if (value === 'contain' && image) {
-          meta[HANDLER] = handleImg;
+          meta[POST_HANDLER] = handleImg;
         }
         break;
       default:

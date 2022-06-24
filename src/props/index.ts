@@ -1,8 +1,9 @@
-import {META, STYLE} from '../constants.js';
+import {META, NODE, STYLE} from '../constants.js';
 import {Context} from '../context.js';
 import {globalStyles} from '../global-styles.js';
-import {El, Styles} from '../types/global.types.js';
+import {Styles} from '../types/global.types.js';
 import {LazyItem, LazyItemNode} from '../types/lazy-item.types.js';
+import {MetaNode} from '../types/meta.types.js';
 import {attrToProps} from './attr-to-props.js';
 import {inheritStyle} from './inherit-style.js';
 import {styleToProps} from './style-to-props.js';
@@ -10,12 +11,13 @@ import {getInlineStyles, selectStyles} from './styles.js';
 
 /**
  *
- * @param el DOM Element
  * @param item
  * @param ctx the context
- * @param parentItem the parent item
+ * @param parentItem? the parent item
  */
-export const computeProps = (el: El, item: LazyItemNode, ctx: Context, parentItem?: LazyItem) => {
+export const computeProps = (item: MetaNode<LazyItemNode>, ctx: Context, parentItem?: LazyItem) => {
+  const el = item[META][NODE];
+
   const styles = ctx.styles;
   const rootStyles = styles[':root'] || globalStyles()[':root'];
 

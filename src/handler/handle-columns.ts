@@ -1,9 +1,10 @@
 import {IS_WHITESPACE, META, STYLE} from '../constants.js';
 import {Column, Item, ItemNode} from '../types/item.types.js';
+import {MetaNode} from '../types/meta.types.js';
 import {getChildItems} from '../utils/index.js';
 import {toUnitOrValue} from '../utils/unit.js';
 
-export const handleColumns = (item: Item): Column => {
+export const handleColumns = (item: MetaNode<Item>): MetaNode<Column> => {
   const childItems = getChildItems(item);
   return {
     columns: childItems
@@ -28,6 +29,7 @@ export const handleColumns = (item: Item): Column => {
           width: toUnitOrValue(subItem[META]?.[STYLE]?.width || 'auto') || 'auto'
         };
       }),
-    columnGap: 'columnGap' in item ? item.columnGap : 0
+    columnGap: 'columnGap' in item ? item.columnGap : 0,
+    [META]: item[META]
   };
 };
