@@ -1,24 +1,28 @@
 <div>
     <h1>Tables</h1>
-    <p>Like in Browser table borders are not collapsed.</p>
+    <p>As in the browser, the table borders are separated by default.</p>
     <div style="display: flex; align-items: flex-start">
         <table>
             <tr>
-                <th style="text-align: center">td align center</th>
+                <th style="text-align: center;"><sup>td align center</sup></th>
+                <th style="text-align: right"><sup>colspan</sup></th>
             </tr>
             <tr>
-                <td style="text-align: right">td align right</td>
+                <td style="text-align: right" colspan="2">is supported</td>
             </tr>
         </table>
 
-        <table style="border: 1px dashed black">
-            <tr>
-                <th style="text-align: center; background: darkslategray; color: white">th background</th>
-            </tr>
-            <tr>
-                <td style="text-align: right; border: 3px solid green">td border</td>
-            </tr>
-        </table>
+        <figure>
+            <table style="border: 1px dashed black; border-spacing: 10px">
+                <tr>
+                    <th style="text-align: center; background: darkslategray; color: white">th background</th>
+                </tr>
+                <tr>
+                    <td style="text-align: right; border: 3px solid green">td border</td>
+                </tr>
+            </table>
+            <figcaption>border-spacing: 10px</figcaption>
+        </figure>
 
         <table style="padding: 20px; border: 1px solid red; background: #7f7f7f">
             <tr>

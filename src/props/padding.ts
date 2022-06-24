@@ -1,4 +1,4 @@
-import {MARGIN, META, PADDING, POS_BOTTOM, POS_LEFT, POS_RIGHT, POS_TOP} from '../constants.js';
+import {META, PADDING, POS_BOTTOM, POS_LEFT, POS_RIGHT, POS_TOP} from '../constants.js';
 import {LazyItem} from '../types/lazy-item.types.js';
 import {ComputedProps} from '../types/props.types.js';
 import {isTable, isTdOrTh} from '../utils/type-guards.js';
@@ -42,7 +42,7 @@ export const computePadding = (item: LazyItem, props: ComputedProps, directive: 
     props[META][PADDING] = [...padding];
 
     if (!isTdOrTh(item)) {
-      const margin = props[META][MARGIN] || item[META]?.[MARGIN] || [0, 0, 0, 0];
+      const margin = props.margin ?? [0, 0, 0, 0];
       props.margin = margin;
       const marginValue = margin[index];
       props.margin[index] = value + marginValue;

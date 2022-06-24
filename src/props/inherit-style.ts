@@ -9,8 +9,8 @@ export const inheritStyle = (el: El, parentItem?: LazyItem): Styles => {
 
   const styles = parentItem[META]?.[STYLE] || {};
 
-  // TR does not really exist
-  const isTr = parentItem?.[META]?.[NODE]?.nodeName === 'TR';
+  // TODO check how to proper inherit BG
+  const inheritBG = parentItem?.[META]?.[NODE]?.nodeName === 'TR' || parentItem && 'text' in parentItem;
 
   // TODO what do we want to exclude ?
   const pick: Record<string, boolean> = {
@@ -24,8 +24,8 @@ export const inheritStyle = (el: El, parentItem?: LazyItem): Styles => {
     'list-style': true,
     'text-align': true,
 
-    background: isTr,
-    'background-color': isTr,
+    background: inheritBG,
+    'background-color': inheritBG,
     'font-style': true,
     'font-feature-settings': true,
     'white-space': true,

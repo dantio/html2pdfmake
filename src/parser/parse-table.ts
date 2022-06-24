@@ -143,7 +143,7 @@ export const parseTable = (): LazyTable | null => {
         }
 
         const collapseBorder = item?.[META]?.[STYLE]?.['border-collapse'] === 'collapse';
-        const percentageWidth = (item?.[META]?.[STYLE]?.['width']?.indexOf('%') || -1) > -1;
+        const percentageWidth = String(item?.[META]?.[STYLE]?.['width']).indexOf('%') > -1;
 
         const longestRow = rows.reduce((a, b) => a.length <= b.length ? b : a).length;
 

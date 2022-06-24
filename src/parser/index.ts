@@ -5,7 +5,8 @@ import {
   IS_NEWLINE,
   IS_WHITESPACE,
   META,
-  NODE, POST_HANDLER,
+  NODE,
+  POST_HANDLER,
   START_WITH_NEWLINE,
   START_WITH_WHITESPACE,
   STYLE
@@ -28,7 +29,7 @@ import {parseTable} from './parse-table.js';
 import {parseText} from './parse-text.js';
 
 const parseAsHTMLCollection = (el: El): el is Element => ['TABLE', 'TBODY', 'TR', 'COLGROUP', 'COL', 'UL', 'OL', 'SELECT'].includes(el.nodeName) && 'children' in el;
-export const stackRegex = /^(address|blockquote|body|center|colgroup|dir|div|dl|fieldset|form|h[1-6]|hr|isindex|menu|noframes|noscript|ol|p|pre|table|ul|dd|dt|frameset|li|tbody|td|tfoot|th|thead|tr|html)$/i;
+export const stackRegex = /^(address|blockquote|body|center|colgroup|dir|div|dl|fieldset|figure|figcaption|form|h[1-6]|hr|isindex|menu|noframes|noscript|ol|p|pre|table|ul|dd|dt|frameset|li|tbody|td|tfoot|th|thead|tr|html)$/i;
 export const isStackItem = (el: El) => stackRegex.test(el.nodeName);
 
 export const parseChildren = (el: El, ctx: Context, parentItem?: LazyItem): Item[] => {
@@ -278,7 +279,7 @@ const getItemByRule = (el: El, ctx: Context): LazyItem | null => {
   throw new Error('Unsupported Node Type: ' + (el as El).nodeType);
 };
 
-const parseLazyChildren = (item: MetaNode<LazyItem>, ctx: Context) => {
+const evaluateLazyChildren = (item: MetaNode<LazyItem>, ctx: Context) => {
   const el = item[META][NODE];
 
   if ('stack' in item && typeof item.stack === 'function') {
@@ -299,21 +300,31 @@ const parseLazyChildren = (item: MetaNode<LazyItem>, ctx: Context) => {
   }
 };
 
-export const processItems = (lazyItem: MetaNode<LazyItem>, ctx: Context, parentItem?: LazyItem): MetaNode<Item> | null => {
-  const item = preHandleLazyItem(lazyItem);
-  if (item === null) {
+const parseLazyChildren = (item: MetaNode<LazyItem>, ctx: Context, parentItem?: LazyItem) => {
+  if (typeof item === 'string') {
+    return preHandleLazyItem(item);
+  }
+
+  const props = computeProps(item, ctx, parentItem);
+  Object.assign(item, props);
+
+  const preHandled = preHandleLazyItem(item);
+  if (preHandled === null) {
     return null;
   }
 
-  if (typeof item !== 'string') {
-    const props = computeProps(item, ctx, parentItem);
+  evaluateLazyChildren(preHandled, ctx);
 
-    Object.assign(item, props);
+  return preHandled;
+};
 
-    parseLazyChildren(item, ctx);
+export const processItems = (item: MetaNode<LazyItem>, ctx: Context, parentItem?: LazyItem): MetaNode<Item> | null => {
+  const withChildren = parseLazyChildren(item, ctx, parentItem);
+  if (withChildren === null) {
+    return null;
   }
 
-  return postHandleItem(item as MetaNode<Item>);
+  return postHandleItem(withChildren as MetaNode<Item>);
 };
 
 export const parseByRule = (el: El, ctx: Context, parentItem?: LazyItem): MetaNode<Item> | null => {

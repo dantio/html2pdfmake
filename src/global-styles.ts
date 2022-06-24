@@ -1,6 +1,9 @@
-export const globalStyles = () => ({
+import {CssStyles} from './types/global.types.js';
+
+export const globalStyles = (): CssStyles => ({
   ':root': {
-    'font-size': '16px'
+    'font-size': '16px',
+    'line-height': 1.2
   },
   h1: {
     'font-size': '32px',
@@ -60,6 +63,10 @@ export const globalStyles = () => ({
     'font-size': '22px',
     'vertical-align': 'sub'
   },
+  sup: {
+    'font-size': '13px',
+    'vertical-align': 'super'
+  },
   small: {
     'font-size': '13px'
   },
@@ -81,11 +88,11 @@ export const globalStyles = () => ({
     'margin-top': '16px',
     'margin-bottom': '16px'
   },
-  table: {
-    border: 'none',
+  figure: {
+    padding: '16px 40px'
   },
   tr: {
-  /*  margin: '4px 0'*/
+    /*  margin: '4px 0'*/
   },
   th: {
     'font-weight': 'bold',

@@ -28,7 +28,7 @@ export const computeProps = (item: MetaNode<LazyItemNode>, ctx: Context, parentI
 
   const elementStyles = selectStyles(selectors, styles);
   const inheritedStyles = inheritStyle(el, parentItem);
-  const cssStyles: Styles = Object.assign({}, elementStyles, inheritedStyles, getInlineStyles(el));
+  const cssStyles: Styles = Object.assign({}, rootStyles, inheritedStyles, elementStyles, getInlineStyles(el));
 
   const styleProps = styleToProps(item, ctx, cssStyles, rootStyles);
 

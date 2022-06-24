@@ -237,7 +237,7 @@ export const styleToProps = (item: LazyItemNode, ctx: Context, styles: Styles, r
         props.opacity = Number(parseFloat(value));
         break;
       case 'gap':
-        props.columnGap = toUnit(value);
+        props.columnGap = toUnit(value) / 2; // TODO check
         break;
       case 'list-style-type':
       case 'list-style':
