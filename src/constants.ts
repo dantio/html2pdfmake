@@ -15,6 +15,7 @@ export const POST_HANDLER = 'POST_HANDLER';
 export const PRE_HANDLER = 'PRE_HANDLER';
 export const PDFMAKE = 'PDFMAKE';
 export const STYLE = 'STYLE';
+export const CLASSES = 'CLASSES';
 
 export const POS_TOP = 1; // CSS 0
 export const POS_RIGHT = 2; // CSS 1

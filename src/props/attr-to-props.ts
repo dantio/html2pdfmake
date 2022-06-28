@@ -1,27 +1,35 @@
-import {POST_HANDLER, META, NODE, PDFMAKE, STYLE} from '../constants.js';
+import {CLASSES, META, NODE, PDFMAKE, POST_HANDLER, STYLE} from '../constants.js';
 import {addTocItem} from '../handler/index.js';
 import {Item} from '../types/item.types.js';
-import {LazyItemNode} from '../types/lazy-item.types.js';
+import {LazyItem, LazyItemNode} from '../types/lazy-item.types.js';
 import {MetaNode} from '../types/meta.types.js';
 import {ComputedProps} from '../types/props.types.js';
 import {getUniqueId} from '../utils/unique-id.js';
 import {toUnit} from '../utils/unit.js';
 
-export const attrToProps = (item: LazyItemNode): ComputedProps => {
+// TODO make customizable
+const computeStyleClasses = (item: LazyItemNode, cascadeClass: string[] = []) => {
   const el = item[META]?.[NODE];
-  if (!el || !('getAttribute' in el)) return {[META]: {[STYLE]: {}}};
+  if (!el || !('getAttribute' in el)) {
+    return [];
+  }
 
   const cssClass = el.getAttribute('class') || '';
-  const cssClasses = [...new Set(cssClass.split(' ')
-    .filter((value: string) => value)
-    .map((value: string) => '.' + value.trim()))];
+  const cssClasses = [...new Set( // TODO use classList?
+    cssClass.split(' ')
+      .filter((value: string) => value)
+      .map((value: string) => '.' + value.trim())
+  )];
 
   const nodeName = el.nodeName.toLowerCase();
   const parentNodeName = el.parentNode ? el.parentNode.nodeName.toLowerCase() : null;
 
   const styleNames = [
     nodeName,
-  ].concat(cssClasses);
+  ]
+    .concat(cascadeClass.map(cssClass => cssClass + ' ' + nodeName))
+    .concat(cssClasses)
+    .concat(cssClasses.map(cssClass => nodeName + cssClass));
 
   if (cssClasses.length > 2) {
     styleNames.push(cssClasses.join('')); // .a.b.c
@@ -34,12 +42,24 @@ export const attrToProps = (item: LazyItemNode): ComputedProps => {
   const uniqueId = getUniqueId(item);
   styleNames.push(uniqueId); // Should be the last one
 
+  return [...new Set((item.style || [] as string[]).concat(styleNames))];
+};
+
+export const attrToProps = (item: LazyItemNode, parentItem?: LazyItem): ComputedProps => {
+  const el = item[META]?.[NODE];
+  if (!el || !('getAttribute' in el)) return {[META]: {[STYLE]: {}}};
+
+  const cssClasses = computeStyleClasses(item, parentItem?.[META]?.[CLASSES]);
+
+  const nodeName = el.nodeName.toLowerCase();
+
   const props: ComputedProps = {
     [META]: {
       [STYLE]: item[META]?.[STYLE] || {},
+      [CLASSES]: (parentItem?.[META]?.[CLASSES] || []).concat(cssClasses),
       ...(item[META] || {})
     },
-    style: [...new Set((item.style || [] as string[]).concat(styleNames))]
+    style: cssClasses
   };
 
   for (let i = 0; i < el.attributes.length; i++) {

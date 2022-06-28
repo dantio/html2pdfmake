@@ -86,15 +86,10 @@ export const handleTable = (item: MetaNode<Item>) => {
 
     const defaultPadding = 0.75;
 
-    if (paddingsTopBottom.length) {
-      tableLayout.paddingTop = (i) => paddingsTopBottom[i]?.[0] ?? defaultPadding;
-      tableLayout.paddingBottom = (i) => paddingsTopBottom[i]?.[1] ?? defaultPadding;
-    }
-
-    if (paddingsLeftRight.length) {
-      tableLayout.paddingLeft = (i,) => paddingsLeftRight[i]?.[0] ?? defaultPadding;
-      tableLayout.paddingRight = (i) => paddingsLeftRight[i]?.[1] ?? defaultPadding;
-    }
+    tableLayout.paddingTop = (i) => paddingsTopBottom[i]?.[0] ?? defaultPadding;
+    tableLayout.paddingBottom = (i) => paddingsTopBottom[i]?.[1] ?? defaultPadding;
+    tableLayout.paddingLeft = (i,) => paddingsLeftRight[i]?.[0] ?? defaultPadding;
+    tableLayout.paddingRight = (i) => paddingsLeftRight[i]?.[1] ?? defaultPadding;
 
     if (borderTopBottom.length) {
       tableLayout.hLineWidth = (i) => {

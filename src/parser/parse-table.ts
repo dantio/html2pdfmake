@@ -3,6 +3,7 @@ import {BORDER, POST_HANDLER, META, PADDING, STYLE} from '../constants.js';
 import {handleTable} from '../handler/index.js';
 import {Item, ItemNode, Text} from '../types/item.types.js';
 import {LazyTable} from '../types/lazy-item.types.js';
+import {MetaNode} from '../types/meta.types.js';
 import {TableDefinition} from '../types/table.types.js';
 import {getChildItems} from '../utils/index.js';
 import {isColgroup} from '../utils/type-guards.js';
@@ -128,6 +129,9 @@ function verifyColspanRowspan(rows: Item[][], longestRow: number) {
   });
 }
 
+const withBorder = (td: Item): td is MetaNode<ItemNode> => typeof td !== 'string' && typeof td.border !== 'undefined';
+const withoutBorder = (td: Item): td is MetaNode<ItemNode> => typeof td !== 'string' && !td.border;
+
 export const parseTable = (): LazyTable | null => {
   return {
     table: {
@@ -136,13 +140,28 @@ export const parseTable = (): LazyTable | null => {
         const colgroup = items.find(isColgroup)?.stack[0];
         const tbody = items.filter(item => !isColgroup(item));
         const trs = tbody.flatMap((item) => 'stack' in item ? item.stack : []);
-        const rows = trs.map((item) => getChildItems(item));
+
+        const collapseBorder = item?.[META]?.[STYLE]?.['border-collapse'] === 'collapse';
+
+        const rows = trs.map((tr) => {
+          const tds = getChildItems(tr);
+
+          // Inherit border from TR
+          if (collapseBorder && withBorder(tr)) {
+            tds.filter(withoutBorder).forEach(td => {
+              td.border = tr.border;
+              td.borderColor = tr.borderColor;
+              td[META][BORDER] = tr[META][BORDER];
+            });
+          }
+
+          return tds;
+        });
 
         if (rows.length === 0) {
           return [];
         }
 
-        const collapseBorder = item?.[META]?.[STYLE]?.['border-collapse'] === 'collapse';
         const percentageWidth = String(item?.[META]?.[STYLE]?.['width']).indexOf('%') > -1;
 
         const longestRow = rows.reduce((a, b) => a.length <= b.length ? b : a).length;

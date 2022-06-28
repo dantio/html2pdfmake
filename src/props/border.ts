@@ -2,7 +2,7 @@ import {CustomTableLayout, DynamicLayout} from 'pdfmake/interfaces.js';
 import {BORDER, META, POS_BOTTOM, POS_LEFT, POS_RIGHT, POS_TOP} from '../constants.js';
 import {LazyItemNode} from '../types/lazy-item.types.js';
 import {ComputedProps} from '../types/props.types.js';
-import {isTable, isTdOrTh} from '../utils/type-guards.js';
+import {isTable} from '../utils/type-guards.js';
 import {toUnit} from '../utils/unit.js';
 
 const getBorderStyle = (value: string) => {
@@ -32,8 +32,7 @@ const colorLineLayout = (props: ComputedProps, l: 'h' | 'v') => {
 
 export const computeBorder = (item: LazyItemNode, props: ComputedProps, directive: string, value: string) => {
   const {color, width, borderStyle} = getBorderStyle(value);
-  const tdOrTh = isTdOrTh(item);
-  const table = !tdOrTh && isTable(item);
+  const table = isTable(item);
 
   const setColumnBorder = (index: number) => {
     const borderWidth = props[META][BORDER] || [0, 0, 0, 0];
@@ -72,7 +71,7 @@ export const computeBorder = (item: LazyItemNode, props: ComputedProps, directiv
           props.layout.hLineStyle = () => ({dash: {length: 2, space: 2}});
           props.layout.vLineStyle = () => ({dash: {length: 2, space: 2}});
         }
-      } else if (tdOrTh) {
+      } else {
         setColumnBorder(0);
         setColumnBorder(1);
         setColumnBorder(2);
@@ -88,7 +87,7 @@ export const computeBorder = (item: LazyItemNode, props: ComputedProps, directiv
         layout.hLineColor = (i, node, columnIndex) => (i === node.table.body.length) ? color : hLineColor(i, node, columnIndex);
 
         props.layout = layout;
-      } else if (tdOrTh) {
+      } else {
         setColumnBorder(POS_BOTTOM);
       }
       break;
@@ -101,7 +100,7 @@ export const computeBorder = (item: LazyItemNode, props: ComputedProps, directiv
         layout.hLineColor = (i, node, columnIndex) => (i === 0) ? color : hLineColor(i, node, columnIndex);
 
         props.layout = layout;
-      } else if (tdOrTh) {
+      } else {
         setColumnBorder(POS_TOP);
       }
       break;
@@ -114,7 +113,7 @@ export const computeBorder = (item: LazyItemNode, props: ComputedProps, directiv
         layout.vLineColor = (i, node, columnIndex) => (node.table.body.length === 1 ? i === node.table.body.length : i % node.table.body.length !== 0) ? color : vLineColor(i, node, columnIndex);
 
         props.layout = layout;
-      } else if (tdOrTh) {
+      } else {
         setColumnBorder(POS_RIGHT);
       }
       break;
@@ -127,7 +126,7 @@ export const computeBorder = (item: LazyItemNode, props: ComputedProps, directiv
         layout.vLineColor = (i, node, columnIndex) => (node.table.body.length === 1 ? i === 0 : i % node.table.body.length === 0) ? color : vLineColor(i, node, columnIndex);
 
         props.layout = layout;
-      } else if (tdOrTh) {
+      } else {
         setColumnBorder(POS_LEFT);
       }
       break;

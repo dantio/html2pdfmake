@@ -6,37 +6,36 @@ export const globalStyles = (): CssStyles => ({
     'line-height': 1.2
   },
   h1: {
-    'font-size': '32px',
+    'font-size': '2em',
     'margin-top': '21.44px',
     'margin-bottom': '21.44px',
     'font-weight': 'bold'
   },
   h2: {
-    'font-size': '24px',
+    'font-size': '1.5em',
     'margin-top': '19.92px',
     'margin-bottom': '19.92px',
     'font-weight': 'bold'
   },
   h3: {
-    'font-size': '18.72px',
+    'font-size': '1.17em',
     'margin-top': '18.72px',
     'margin-bottom': '18.72px',
     'font-weight': 'bold'
   },
   h4: {
-    'font-size': '16px',
     'margin-top': '21.28px',
     'margin-bottom': '21.28px',
     'font-weight': 'bold'
   },
   h5: {
-    'font-size': '13.28px',
+    'font-size': '.83em',
     'margin-top': '22.17px',
     'margin-bottom': '22.17px',
     'font-weight': 'bold'
   },
   h6: {
-    'font-size': '10.72px',
+    'font-size': '.67em',
     'margin-top': '24.97px',
     'margin-bottom': '24.97px',
     'font-weight': 'bold'

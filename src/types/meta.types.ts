@@ -1,5 +1,6 @@
 import {
   BORDER,
+  CLASSES,
   END_WITH_NEWLINE,
   END_WITH_WHITESPACE,
   IS_NEWLINE,
@@ -45,5 +46,6 @@ export type Meta = {
   [POST_HANDLER]?: (item: MetaNode<Item>) => MetaNode<Item> | null
 
   [STYLE]?: Styles
+  [CLASSES]?: string[] // CSS classes from parent
   [PDFMAKE]?: Record<string, unknown>
 }

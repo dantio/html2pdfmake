@@ -8,6 +8,28 @@
         .right {
             text-align: right;
         }
+
+        .items th {
+            padding: 4px;
+            font-weight: normal;
+            text-align: left;
+        }
+
+        .items td {
+            padding: 4px;
+        }
+
+        table.items {
+            border-collapse: collapse;
+            width: 100%;
+            line-height: 1;
+            border-bottom: 1px solid black;
+            margin-bottom: 1cm;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
     </style>
 
     <header>
@@ -22,7 +44,7 @@
 
     <main>
         <h1>Rechnung</h1>
-        <table style="border: 10px solid black; margin-bottom: 30px; padding: 10px; border-collapse: collapse; width: 60%">
+        <table style="line-height: 1; margin-bottom: 2cm; width: 50%">
             <tr>
                 <td>Rechnung</td>
                 <td>2022</td>
@@ -30,7 +52,7 @@
             <tr>
                 <td>Rechnungsdatum</td>
                 <td>10.06.2022</td>
-            </tr>^
+            </tr>
             <tr>
                 <td>Bestelldatum</td>
                 <td>10.06.2022</td>
@@ -53,10 +75,13 @@
             </tr>
         </table>
 
-        <table style="border: 1px solid green; border-collapse: collapse; padding: 20px">
-            <tr style="background: #ccc">
-                <th>Collapse</th>
-                <th>Nummer</th>
+        <table class="items">
+            <colgroup>
+                <col style="width: 10%">
+            </colgroup>
+            <tr style="border-top: 1px solid black; border-bottom: 1px solid black; background: #ccc">
+                <th class="right">Pos</th>
+                <th>Nummer Test</th>
                 <th>Artikel</th>
                 <th class="right">Anzahl</th>
                 <th class="right">Preis</th>
@@ -70,51 +95,44 @@
                 <td class="right">2,83 €</td>
                 <td class="right">5,66 €</td>
             </tr>
+            <tr>
+                <td>1</td>
+                <td>B1</td>
+                <td>Super Artikel</td>
+                <td class="right">2</td>
+                <td class="right">2,83 €</td>
+                <td class="right">5,66 €</td>
+            </tr>
         </table>
-
-        <table style="border: 1px solid black; width: 90%">
-            <colgroup>
-                <col>
-                <col style="width: 200px; background: #00dc3c">
-            </colgroup>
-            <tr style="background: #ccc; ">
-                <th style="border-right: 6px solid red; border-bottom: 5px solid blue">Pos</th>
-                <th>Nummer Test</th>
-                <th style="width: 200px">Artikel</th>m
-                <th class="right" style="border-right: 2px solid red; border-bottom: 3px solid blue">Anzahl</th>
-                <th class="right">Preis</th>
-                <th class="right">Summe</th>
-            </tr>
+        <table style="width: 100%; padding-left: 8cm; margin-bottom: 1cm">
             <tr>
-                <td>1</td>
-                <td>B1</td>
-                <td style="background: #0074D9">Super Artikel</td>
-                <td class="right">2</td>
-                <td class="right">2,83 €</td>
+                <td>Zwischensumme (netto)</td>
                 <td class="right">5,66 €</td>
             </tr>
             <tr>
-                <td>1</td>
-                <td>B1</td>
-                <td style="background: #0074D9">Super Artikel</td>
-                <td class="right">2</td>
-                <td class="right">2,83 €</td>
+                <td>Versand</td>
+                <td class="right">0,00 €</td>
+            </tr>
+            <tr>
+                <td>Gesamt netto</td>
                 <td class="right">5,66 €</td>
+            </tr>
+            <tr>
+                <td>Umsatzsteuer (7,0%)</td>
+                <td class="right">0,40 €</td>
+            </tr>
+            <tr class="bold">
+                <td>Gesamtsumme</td>
+                <td class="right">6,06 €</td>
             </tr>
         </table>
 
         <p>Ihre Zahlung haben wir am 10.06.2022 per PayPal erhalten. Vielen Dank!</p>
     </main>
 
-    <footer data-page="odd">
-        <p style="text-align: right; padding-right: 30px">Seite: <span data-value="currentPage"></span>/<b
+    <footer>
+        <p style="text-align: right; padding-right: 30px; font-size: 12px">Seite: <span data-value="currentPage"></span>/<b
                 data-value="pageCount"></b>
         </p>
-    </footer>
-    <footer data-page="2">
-        <p style="padding: 0 40px">Footer Page 2</p>
-    </footer>
-    <footer data-page="default">
-        <p>Default Footer Page 2</p>
     </footer>
 </template>

@@ -21,7 +21,7 @@ export const computeProps = (item: MetaNode<LazyItemNode>, ctx: Context, parentI
   const styles = ctx.styles;
   const rootStyles = styles[':root'] || globalStyles()[':root'];
 
-  const attrProps = attrToProps(item);
+  const attrProps = attrToProps(item, parentItem);
 
   // TODO improve sort by specificity
   const selectors = (attrProps.style || []).concat(el.nodeName.toLowerCase()).sort().reverse();
