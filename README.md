@@ -1,4 +1,6 @@
 # html2pdfmake
+Advanced HTML to PDFMake DocDefinition parser.
+
 Parse HTML/DOM to pdfmake.
 
 ## Install
@@ -7,7 +9,7 @@ npm i html2pdfmake
 yarn add html2pdfmake
 ```
 
-## Usage
+## Quick Usage
 ```html
 <div id="template">
     <p>Text</p>

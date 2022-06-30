@@ -1,5 +1,5 @@
 import {Size} from 'pdfmake/interfaces.js';
-import {BORDER, POST_HANDLER, META, PADDING, STYLE} from '../constants.js';
+import {BORDER, META, PADDING, POST_HANDLER, STYLE} from '../constants.js';
 import {handleTable} from '../handler/index.js';
 import {Item, ItemNode, Text} from '../types/item.types.js';
 import {LazyTable} from '../types/lazy-item.types.js';
@@ -39,34 +39,33 @@ const computeHeights = (trs: Item[], defaultHeight = 'auto') => {
   return heights;
 };
 
-function computeWidths(longestRow: number, percentageWidth: boolean, colgroup: Item | undefined) {
+const applyColStylesAndComputeWidth = (longestRow: number, percentageWidth: boolean, rows: Item[][], colgroup?: Item) => {
   const widths: Size[] = new Array(longestRow).fill(percentageWidth ? '*' : 'auto');
-  if (colgroup && 'text' in colgroup && Array.isArray(colgroup.text)) {
-    colgroup.text.forEach((col: Item, i: number) => {
-      if (col[META]?.[STYLE]?.width) {
-        widths[i] = getUnitOrValue(col[META]?.[STYLE]?.width || '*');
-      }
-    });
-  }
 
-  return widths;
-}
-
-const applyColStyles = (rows: Item[][], colgroup?: Item) => {
   if (!(colgroup && 'text' in colgroup && Array.isArray(colgroup.text))) {
-    return;
+    return widths;
   }
 
   colgroup.text.forEach((col: Item, i: number) => {
     // TODO support other styles and refactor code
-    if (typeof col !== 'string' && col.fillColor) {
+    if (typeof col !== 'string') {
       rows.forEach(row => {
-        if (row[i] && typeof row[i] !== 'string' && !(row[i] as ItemNode).fillColor) {
-          (row[i] as ItemNode).fillColor = col.fillColor;
+        if (row[i] && typeof row[i] !== 'string') {
+          const item = row[i] as ItemNode;
+
+          if (!item.fillColor && col.fillColor) { // only if not set
+            item.fillColor = col.fillColor;
+          }
         }
       });
     }
+
+    if (col[META]?.[STYLE]?.width) {
+      widths[i] = getUnitOrValue(col[META]?.[STYLE]?.width || '*');
+    }
   });
+
+  return widths;
 };
 
 type ExtraColumn = {
@@ -166,10 +165,8 @@ export const parseTable = (): LazyTable | null => {
 
         const longestRow = rows.reduce((a, b) => a.length <= b.length ? b : a).length;
 
-        const tdWidths: Size[] = computeWidths(longestRow, percentageWidth, colgroup);
+        const tdWidths: Size[] = applyColStylesAndComputeWidth(longestRow, percentageWidth, rows, colgroup);
         const trHeights: Size[] = computeHeights(trs);
-
-        applyColStyles(rows, colgroup);
 
         const body = verifyColspanRowspan(rows, longestRow);
 

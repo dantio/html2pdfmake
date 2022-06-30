@@ -199,6 +199,7 @@ export const styleToProps = (item: LazyItemNode, ctx: Context, styles: Styles, r
         }
         break;
       case 'position': {
+        // TODO supoprt bottom and right
         const x = toUnit(styles['left'] || 0);
         const y = toUnit(styles['top'] || 0);
 

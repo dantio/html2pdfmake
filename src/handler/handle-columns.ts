@@ -6,6 +6,8 @@ import {toUnitOrValue} from '../utils/unit.js';
 
 export const handleColumns = (item: MetaNode<Item>): MetaNode<Column> => {
   const childItems = getChildItems(item);
+  const spaceBetween = item[META][STYLE]?.['justify-content'] === 'space-between';
+  const defaultWidth = spaceBetween ? '*' : 'auto';
   return {
     columns: childItems
       .flatMap((subItem: Item): ItemNode[] | ItemNode => {
@@ -13,7 +15,7 @@ export const handleColumns = (item: MetaNode<Item>): MetaNode<Column> => {
           return subItem.text
             .filter(childItem => !childItem[META]?.[IS_WHITESPACE])
             .map(text => {
-              const width = toUnitOrValue(text[META]?.[STYLE]?.width || 'auto') || 'auto';
+              const width = toUnitOrValue(text[META]?.[STYLE]?.width || defaultWidth) || defaultWidth;
               return (typeof text === 'string') ? {
                 text,
                 width
@@ -26,7 +28,7 @@ export const handleColumns = (item: MetaNode<Item>): MetaNode<Column> => {
 
         return {
           stack: ([] as Item[]).concat(subItem),
-          width: toUnitOrValue(subItem[META]?.[STYLE]?.width || 'auto') || 'auto'
+          width: toUnitOrValue(subItem[META]?.[STYLE]?.width || defaultWidth) || defaultWidth
         };
       }),
     columnGap: 'columnGap' in item ? item.columnGap : 0,

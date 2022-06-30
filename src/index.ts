@@ -52,7 +52,8 @@ export const parseTemplate = (template: Element | Document, _config: Partial<Con
 
   const styles = root.querySelectorAll('style');
 
-  ctx.setPageStyles(ctx.config.parseCss(styles));
+  const pageStyles = ctx.config.parseCss(styles);
+  ctx.setPageStyles(pageStyles);
 
   const main = root.querySelector('main');
   const title = root.querySelector('title');

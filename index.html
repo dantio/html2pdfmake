@@ -61,7 +61,9 @@
             const content = styles[0].innerHTML;
             const css = CSSJSON.toJSON(content)
             return Object.keys(css.children).reduce((result, key) => {
-              result[key] = css.children[key].attributes
+              key.split(',').filter(k => !!k).forEach(k => {
+                result[k.trim()] = css.children[key].attributes
+              })
 
               return result;
             }, {})

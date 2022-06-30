@@ -42,6 +42,7 @@ const computeStyleClasses = (item: LazyItemNode, cascadeClass: string[] = []) =>
   const uniqueId = getUniqueId(item);
   styleNames.push(uniqueId); // Should be the last one
 
+  // TODO improve sort by specificity
   return [...new Set((item.style || [] as string[]).concat(styleNames))];
 };
 
