@@ -1,4 +1,11 @@
 # html2pdfmake Changelog
+### [0.0.10](https://github.com/dantio/html2pdfmake/compare/v0.0.9...v0.0.10) (2022-06-30)
+
+
+### Bug Fixes
+
+* use Content from pdfmake types ([77fa5ed](https://github.com/dantio/html2pdfmake/commit/77fa5ed34837b17017b36f14e4fdc488c288e05e))
+
 ### [0.0.9](https://github.com/dantio/html2pdfmake/compare/v0.0.8...v0.0.9) (2022-06-30)
 
 

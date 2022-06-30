@@ -1,6 +1,6 @@
 {
   "name": "html2pdfmake",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "HTML/DOM to pdfmake",
   "type": "module",
   "author": "Daniil Tomilow",
