@@ -1,5 +1,6 @@
 import {Context} from '../context.js';
 import {parseChildren} from '../parser/index.js';
+import {parseImg} from '../parser/parse-img.js';
 import {Item} from '../types/item.types.js';
 
 type HeaderFooter = Record<string | number, (data: Record<string, unknown>) => Item[]>
@@ -10,6 +11,13 @@ export const headerFooterContent = (els: NodeListOf<Element>, ctx: Context): Hea
   let index = 1;
   for (let i = 0; i < els.length; i++) {
     const el = els[i];
+
+    // Add Images to context
+    const images = el.querySelectorAll(':scope img');
+    for (let i = 0; i < images.length; i++) {
+      parseImg(images[i], ctx);
+    }
+
     const dataPage: string | null = el.getAttribute('data-page');
     let page: string | number = index;
 
