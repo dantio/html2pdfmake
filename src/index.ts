@@ -1,4 +1,4 @@
-import {PredefinedPageSize} from 'pdfmake/interfaces.js';
+import {Content, PredefinedPageSize} from 'pdfmake/interfaces.js';
 import {getPatterns} from './constants.js';
 import {createContext} from './context.js';
 import {defaultConfig} from './default-config.js';
@@ -34,7 +34,7 @@ export const parse = (input: Document | Element | string, _config: Partial<Confi
       creator: 'html2pdfmake',
       producer: 'html2pdfmake',
     },
-    content,
+    content: content as Content,
     images: ctx.images,
     patterns: getPatterns(),
 
@@ -84,13 +84,13 @@ export const parseTemplate = (template: Element | Document, _config: Partial<Con
 
   return {
     header(currentPage: number, pageCount: number) {
-      return headerFooter(currentPage, pageCount, headers);
+      return headerFooter(currentPage, pageCount, headers) as Content;
     },
     footer(currentPage: number, pageCount: number) {
-      return headerFooter(currentPage, pageCount, footers);
+      return headerFooter(currentPage, pageCount, footers) as Content;
     },
     info,
-    content,
+    content: content as Content,
     images: ctx.images,
     patterns: getPatterns(),
 

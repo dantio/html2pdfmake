@@ -1,16 +1,13 @@
-import {PageOrientation, PredefinedPageSize, TDocumentInformation} from 'pdfmake/interfaces.js';
-import {Item} from './item.types.js';
-
-export type DocInfo = TDocumentInformation
+import {Content, PageOrientation, PredefinedPageSize, TDocumentInformation} from 'pdfmake/interfaces.js';
 
 export type DocDefinition = {
-  info: DocInfo,
-  content: Item[],
+  info: TDocumentInformation,
+  content: Content,
   patterns: Record<string, unknown>,
   pageSize: PredefinedPageSize,
   pageOrientation: PageOrientation,
   images: Record<string, string>,
   pageMargins: number[],
-  header: (currentPage: number, pageCount: number) => Item[],
-  footer: (currentPage: number, pageCount: number) => Item[],
+  header: (currentPage: number, pageCount: number) => Content,
+  footer: (currentPage: number, pageCount: number) => Content,
 }
