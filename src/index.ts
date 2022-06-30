@@ -19,6 +19,13 @@ export const parse = (input: Document | Element | string, _config: Partial<Confi
   }
 
   const ctx = createContext(_config);
+
+  if (root) {
+    const styles = root.querySelectorAll('style');
+    const pageStyles = ctx.config.parseCss(styles);
+    ctx.setPageStyles(pageStyles);
+  }
+
   const content = root !== null ? parseChildren(root, ctx) : [];
 
   return {
@@ -51,7 +58,6 @@ export const parseTemplate = (template: Element | Document, _config: Partial<Con
   const footers = headerFooterContent(root.querySelectorAll(':scope > footer, body > footer'), ctx);
 
   const styles = root.querySelectorAll('style');
-
   const pageStyles = ctx.config.parseCss(styles);
   ctx.setPageStyles(pageStyles);
 
