@@ -1,4 +1,12 @@
 # html2pdfmake Changelog
+### [0.0.9](https://github.com/dantio/html2pdfmake/compare/v0.0.8...v0.0.9) (2022-06-30)
+
+
+### Bug Fixes
+
+* pdfmake type dependency ([720f7fc](https://github.com/dantio/html2pdfmake/commit/720f7fcfedba001418eaad5fede00cb7cd67e488))
+* use latest mjs from CF ([83d844c](https://github.com/dantio/html2pdfmake/commit/83d844c0980a6ab56408ecdd7c62b9583ed59e95))
+
 ### [0.0.8](https://github.com/dantio/html2pdfmake/compare/v0.0.7...v0.0.8) (2022-06-30)
 
 
