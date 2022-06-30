@@ -32,20 +32,13 @@
         }
     </style>
 
-    <header>
-        <p>Header Page1</p>
-        <div>
-            <img src="https://picsum.photos/100/20" alt="logo" height="20px">
-        </div>
-    </header>
-    <header data-page="default">
-        <p>Default Header</p>
-    </header>
-    <header>
-        <p class="violet">Violet Header Page2</p>
-    </header>
-
     <main>
+        <p style="font-size: 13px"><u>MY COMPANY GmbH • My Stree 1 • 11111 Berlin</u></p>
+        <div>
+            <span>My Customer</span><br>
+            <span>Customer Str. 1</span><br>
+            <span>11111 Berlin</span>
+        </div>
         <h1>Rechnung</h1>
         <table style="line-height: 1; margin-bottom: 2cm; width: 50%">
             <tr>
@@ -138,8 +131,6 @@
     </main>
 
     <footer>
-        <!--        <p style="position: absolute; top: 200px; left: 100px; font-size: 12px">Seite: <span data-value="currentPage"></span>/<b
-                        data-value="pageCount"></b>-->
         <div style="margin: 0 2cm">
             <div style="display: flex; font-size: 12px;justify-content: space-between">
                 <div>
@@ -163,6 +154,8 @@
                     My Bank
                 </div>
             </div>
+            <p style="font-size: 12px; text-align: right;">Seite: <span data-value="currentPage"></span>/<b
+                    data-value="pageCount"></b>
         </div>
     </footer>
 </template>
