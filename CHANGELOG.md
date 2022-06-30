@@ -1,4 +1,24 @@
 # html2pdfmake Changelog
+### [0.0.8](https://github.com/dantio/html2pdfmake/compare/v0.0.7...v0.0.8) (2022-06-30)
+
+
+### Features
+
+* better font and color handling ([352afe8](https://github.com/dantio/html2pdfmake/commit/352afe825a82bd6239753b3827f038ac206f2109))
+* inherit border from tr if table is not collapsed ([fac9110](https://github.com/dantio/html2pdfmake/commit/fac911098479076727e2b2202fc4d637e5c11bfe))
+* parse style elements ([936a941](https://github.com/dantio/html2pdfmake/commit/936a941e8ff5261ebf6194400c33787b2af888e0))
+* style and table improvements ([d1fa780](https://github.com/dantio/html2pdfmake/commit/d1fa780ff6460afaa99011b00074cb344f1ce1fb))
+* styleRule & pre/post handler ([5eb27b8](https://github.com/dantio/html2pdfmake/commit/5eb27b8f1524a8bbae1cf1077c5d11b3204f1737))
+* use root styles & fix pre handler ([d841667](https://github.com/dantio/html2pdfmake/commit/d8416679c52c3e641a8423523ffa3a82566de05c))
+
+
+### Bug Fixes
+
+* color & minor refactoring ([f2c1638](https://github.com/dantio/html2pdfmake/commit/f2c1638d7e784138be7f34bf4b58f6b3aac2e258))
+* images in header and footer ([254ad44](https://github.com/dantio/html2pdfmake/commit/254ad44844db0df49435e918c5d7c8bc69676f1a))
+* jsdelivr latest url ([15bf62a](https://github.com/dantio/html2pdfmake/commit/15bf62a242f4a9414a068a1c882ffccdd75dfff8))
+* simple sort css selector by specificity ([669963b](https://github.com/dantio/html2pdfmake/commit/669963bf3017c2447b1ca8819eada7b31923a01a))
+
 ### [0.0.7](https://github.com/dantio/html2pdfmake/compare/v0.0.6...v0.0.7) (2022-06-02)
 
 
